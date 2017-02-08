@@ -13,8 +13,13 @@
 #include <GL/glu.h>
 #endif
 #include <stdio.h>
+#include <direct.h>
+#define GetCurrentDir _getcwd
+
 #include <string>
 #include <cstdlib>
+#include <iostream>
+#include <fstream>
 
 #include <openvr.h>
 
@@ -810,36 +815,45 @@ GLuint CMainApplication::CompileGLShader( const char *pchShaderName, const char 
 }
 
 
+std::string readFile(std::string filename)
+{
+	std::cout << "Reading file: " << filename << std::endl;
+	std::string contents = ""; // reading a large file in this way is inefficient
+	std::ifstream f;
+	f.open(filename);
+	if (f.is_open()) {
+		std::string line;
+		while (std::getline(f, line)) {
+			contents = contents + line + '\n';
+		}
+	}
+	else
+	{
+		std::cout << "Unable to open file." << std::endl;
+	}
+	std::cout << contents << std::endl;
+	return contents;
+}
+
+
 //-----------------------------------------------------------------------------
 // Purpose: Creates all the shaders used by HelloVR SDL
 //-----------------------------------------------------------------------------
 bool CMainApplication::CreateAllShaders()
 {
+	char cCurrentPath[FILENAME_MAX];
+	GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
+
 	m_unSceneProgramID = CompileGLShader( 
 		"Scene",
 
 		// Vertex Shader
-		"#version 410\n"
-		"uniform mat4 matrix;\n"
-		"layout(location = 0) in vec4 position;\n"
-		"layout(location = 1) in vec2 v2UVcoordsIn;\n"
-		"layout(location = 2) in vec3 v3NormalIn;\n"
-		"out vec2 v2UVcoords;\n"
-		"void main()\n"
-		"{\n"
-		"	v2UVcoords = v2UVcoordsIn;\n"
-		"	gl_Position = matrix * position;\n"
-		"}\n",
+		readFile("default.vs").c_str(),
+		//readFile("C:/Users/VR Club/Desktop/GWaves/openvr/samples/hellovr_opengl/Debug/default.vs").c_str(),
+		
 
 		// Fragment Shader
-		"#version 410 core\n"
-		"uniform sampler2D mytexture;\n"
-		"in vec2 v2UVcoords;\n"
-		"out vec4 outputColor;\n"
-		"void main()\n"
-		"{\n"
-		"   outputColor = texture(mytexture, v2UVcoords);\n"
-		"}\n"
+		readFile("default.fs").c_str()
 		);
 	m_nSceneMatrixLocation = glGetUniformLocation( m_unSceneProgramID, "matrix" );
 	if( m_nSceneMatrixLocation == -1 )
@@ -852,25 +866,10 @@ bool CMainApplication::CreateAllShaders()
 		"Controller",
 
 		// vertex shader
-		"#version 410\n"
-		"uniform mat4 matrix;\n"
-		"layout(location = 0) in vec4 position;\n"
-		"layout(location = 1) in vec3 v3ColorIn;\n"
-		"out vec4 v4Color;\n"
-		"void main()\n"
-		"{\n"
-		"	v4Color.xyz = v3ColorIn; v4Color.a = 1.0;\n"
-		"	gl_Position = matrix * position;\n"
-		"}\n",
+		readFile("controller.vs").c_str(),
 
-		// fragment shader
-		"#version 410\n"
-		"in vec4 v4Color;\n"
-		"out vec4 outputColor;\n"
-		"void main()\n"
-		"{\n"
-		"   outputColor = v4Color;\n"
-		"}\n"
+		// fragment shadershader
+		readFile("controller.fs").c_str()
 		);
 	m_nControllerMatrixLocation = glGetUniformLocation( m_unControllerTransformProgramID, "matrix" );
 	if( m_nControllerMatrixLocation == -1 )
@@ -883,27 +882,10 @@ bool CMainApplication::CreateAllShaders()
 		"render model",
 
 		// vertex shader
-		"#version 410\n"
-		"uniform mat4 matrix;\n"
-		"layout(location = 0) in vec4 position;\n"
-		"layout(location = 1) in vec3 v3NormalIn;\n"
-		"layout(location = 2) in vec2 v2TexCoordsIn;\n"
-		"out vec2 v2TexCoord;\n"
-		"void main()\n"
-		"{\n"
-		"	v2TexCoord = v2TexCoordsIn;\n"
-		"	gl_Position = matrix * vec4(position.xyz, 1);\n"
-		"}\n",
+		readFile("model.vs").c_str(),
 
-		//fragment shader
-		"#version 410 core\n"
-		"uniform sampler2D diffuse;\n"
-		"in vec2 v2TexCoord;\n"
-		"out vec4 outputColor;\n"
-		"void main()\n"
-		"{\n"
-		"   outputColor = texture( diffuse, v2TexCoord);\n"
-		"}\n"
+		// fragment shadershader
+		readFile("model.fs").c_str()
 
 		);
 	m_nRenderModelMatrixLocation = glGetUniformLocation( m_unRenderModelProgramID, "matrix" );
@@ -917,25 +899,10 @@ bool CMainApplication::CreateAllShaders()
 		"CompanionWindow",
 
 		// vertex shader
-		"#version 410 core\n"
-		"layout(location = 0) in vec4 position;\n"
-		"layout(location = 1) in vec2 v2UVIn;\n"
-		"noperspective out vec2 v2UV;\n"
-		"void main()\n"
-		"{\n"
-		"	v2UV = v2UVIn;\n"
-		"	gl_Position = position;\n"
-		"}\n",
+		readFile("companion_window.vs").c_str(),
 
-		// fragment shader
-		"#version 410 core\n"
-		"uniform sampler2D mytexture;\n"
-		"noperspective in vec2 v2UV;\n"
-		"out vec4 outputColor;\n"
-		"void main()\n"
-		"{\n"
-		"		outputColor = texture(mytexture, v2UV);\n"
-		"}\n"
+		// fragment shadershader
+		readFile("companion_window.fs").c_str()
 		);
 
 	return m_unSceneProgramID != 0 
