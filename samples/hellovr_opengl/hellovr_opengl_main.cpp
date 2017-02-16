@@ -48,6 +48,14 @@ void ThreadSleep( unsigned long nMilliseconds )
 #endif
 }
 
+long int SysTimeMS()
+{
+	FILETIME ft_now;
+	GetSystemTimeAsFileTime(&ft_now);
+	LONGLONG ll_now = (LONGLONG)ft_now.dwLowDateTime + ((LONGLONG)(ft_now.dwHighDateTime) << 32LL);
+	return ll_now / 10000;
+}
+
 class CGLRenderModel
 {
 public:
@@ -136,6 +144,8 @@ private:
 	Matrix4 m_rmat4DevicePose[ vr::k_unMaxTrackedDeviceCount ];
 	bool m_rbShowTrackedDevice[ vr::k_unMaxTrackedDeviceCount ];
 
+	long int launchTime;
+
 private: // SDL bookkeeping
 	SDL_Window *m_pCompanionWindow;
 	uint32_t m_nCompanionWindowWidth;
@@ -207,6 +217,7 @@ private: // OpenGL bookkeeping
 	GLuint m_unRenderModelProgramID;
 
 	GLint m_nSceneMatrixLocation;
+	GLint m_nTimeLocation;
 	GLint m_nControllerMatrixLocation;
 	GLint m_nRenderModelMatrixLocation;
 
@@ -349,6 +360,8 @@ std::string GetTrackedDeviceString( vr::IVRSystem *pHmd, vr::TrackedDeviceIndex_
 //-----------------------------------------------------------------------------
 bool CMainApplication::BInit()
 {
+	launchTime = SysTimeMS();
+
 	if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0 )
 	{
 		printf("%s - SDL could not initialize! SDL Error: %s\n", __FUNCTION__, SDL_GetError());
@@ -855,10 +868,16 @@ bool CMainApplication::CreateAllShaders()
 		// Fragment Shader
 		readFile("default.fs").c_str()
 		);
-	m_nSceneMatrixLocation = glGetUniformLocation( m_unSceneProgramID, "matrix" );
-	if( m_nSceneMatrixLocation == -1 )
+	m_nSceneMatrixLocation = glGetUniformLocation(m_unSceneProgramID, "matrix");
+	if (m_nSceneMatrixLocation == -1)
 	{
-		dprintf( "Unable to find matrix uniform in scene shader\n" );
+		dprintf("Unable to find matrix uniform in scene shader\n");
+		return false;
+	}
+	m_nTimeLocation = glGetUniformLocation(m_unSceneProgramID, "time");
+	if (m_nTimeLocation == -1)
+	{
+		dprintf("Unable to find time uniform in scene shader\n");
 		return false;
 	}
 
@@ -894,6 +913,7 @@ bool CMainApplication::CreateAllShaders()
 		dprintf( "Unable to find matrix uniform in render model shader\n" );
 		return false;
 	}
+	// TODO: Does this also require a time uniform?
 
 	m_unCompanionWindowProgramID = CompileGLShader(
 		"CompanionWindow",
@@ -1364,10 +1384,13 @@ void CMainApplication::RenderScene( vr::Hmd_Eye nEye )
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 
+	const GLfloat appTime = (GLfloat) (SysTimeMS() - launchTime) * .001f;
+
 	if( m_bShowCubes )
 	{
 		glUseProgram( m_unSceneProgramID );
 		glUniformMatrix4fv( m_nSceneMatrixLocation, 1, GL_FALSE, GetCurrentViewProjectionMatrix( nEye ).get() );
+		glUniform1fv(m_nTimeLocation, 1, &appTime);
 		glBindVertexArray( m_unSceneVAO );
 		glBindTexture( GL_TEXTURE_2D, m_iTexture );
 		glDrawArrays( GL_TRIANGLES, 0, m_uiVertcount );
