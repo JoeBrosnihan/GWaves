@@ -786,6 +786,12 @@ GLuint CMainApplication::CompileGLShader( const char *pchShaderName, const char 
 	if ( vShaderCompiled != GL_TRUE)
 	{
 		dprintf("%s - Unable to compile vertex shader %d!\n", pchShaderName, nSceneVertexShader);
+
+		GLchar infoLog[5000] = { 0 };
+		GLint infoLogLength;
+		glGetShaderInfoLog(nSceneVertexShader, sizeof(infoLog) - 1, &infoLogLength, infoLog);
+		dprintf("%s\n", infoLog);
+
 		glDeleteProgram( unProgramID );
 		glDeleteShader( nSceneVertexShader );
 		return 0;
@@ -802,6 +808,12 @@ GLuint CMainApplication::CompileGLShader( const char *pchShaderName, const char 
 	if (fShaderCompiled != GL_TRUE)
 	{
 		dprintf("%s - Unable to compile fragment shader %d!\n", pchShaderName, nSceneFragmentShader );
+
+		GLchar infoLog[5000] = { 0 };
+		GLint infoLogLength;
+		glGetShaderInfoLog(nSceneFragmentShader, sizeof(infoLog) - 1, &infoLogLength, infoLog);
+		dprintf("%s\n", infoLog);
+
 		glDeleteProgram( unProgramID );
 		glDeleteShader( nSceneFragmentShader );
 		return 0;	
