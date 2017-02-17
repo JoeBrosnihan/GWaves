@@ -10,10 +10,14 @@ void main()
 {
 	v2UVcoords = v2UVcoordsIn;
 	//vec4 coolPosition = position;
-	vec4 coolPosition = vec4(
-		position.x + sin(position.y * .5 + time),
-		position.y + sin(position.z * .5 + time),
-		position.z + sin(position.x * .5 + time),
-		position.w);
+	// vec4 coolPosition = vec4(
+	// 	position.x + sin(position.y * .5 + time),
+	// 	position.y + sin(position.z * .5 + time),
+	// 	position.z + sin(position.x * .5 + time),
+	// 	position.w);
+
+	float dist = length(position);
+	vec4 coolPosition = vec4(position.xyz * (1.0 + sin(dist * .5 + time)) / 1.0, position.w);
+
 	gl_Position = matrix * coolPosition;
 }
