@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="hellovr_opengl_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\shared\lodepng.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
@@ -35,6 +32,18 @@
     </ClCompile>
     <ClCompile Include="..\shared\strtools.cpp">
       <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="hellovr_opengl_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hellovr_opengl_main_valve.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IOUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GLRenderer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -53,5 +62,17 @@
     <ClInclude Include="..\shared\strtools.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="IOUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>
