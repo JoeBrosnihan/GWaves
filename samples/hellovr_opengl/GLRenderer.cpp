@@ -173,4 +173,18 @@ GLuint GLRenderer::compileShader(const char *shaderName, const char *vertexShade
 	glUseProgram(0);
 
 	return unProgramID;
-};
+}
+
+void GLRenderer::renderFrame() {
+	glClearColor(1, 0, .5f, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glFinish();
+
+	SDL_GL_SwapWindow(m_pCompanionWindow);
+
+	// We want to make sure the glFinish waits for the entire present to complete, not just the submission
+	// of the command. So, we do a clear here right here so the glFinish will wait fully for the swap.
+	glClearColor(.5f, 0, 1, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}

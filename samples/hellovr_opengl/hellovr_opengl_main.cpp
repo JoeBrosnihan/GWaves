@@ -6,6 +6,7 @@
 
 #include "IRenderer.h"
 #include "GLRenderer.h"
+#include "GLRenderTarget.h"
 
 // Use the OpenGL implementation.
 typedef GLRenderer Renderer;
@@ -44,6 +45,8 @@ int main(int argc, char *argv[])
 	*/
 	Renderer renderer;
 	renderer.init();
+
+	Renderer::RenderTarget target(300, 200, 4);
 
 	bool bQuit = false;
 

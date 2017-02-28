@@ -2,13 +2,16 @@
 
 #include <SDL.h>
 #include <GL/glew.h>
+#include <iostream>
 
 #include "IRenderer.h"
+#include "GLRenderTarget.h"
 
-class GLRenderer : public IRenderer<GLRenderer> {
+class GLRenderer : public IRenderer<GLRenderer, GLRenderTarget> {
 public:
 	GLRenderer();
 	void init();
+	void renderFrame();
 private: // SDL bookkeeping
 	SDL_Window *m_pCompanionWindow;
 	uint32_t m_nCompanionWindowWidth;
