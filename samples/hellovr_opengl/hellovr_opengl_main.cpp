@@ -7,6 +7,8 @@
 #include "SDLDisplay.h"
 #include "GLRenderer.h"
 #include "GLRenderTarget.h"
+#include "IOUtils.h"
+#include "FluidSim.h"
 
 // Use the OpenGL implementation.
 typedef SDLDisplay Display;
@@ -35,6 +37,38 @@ bool handleInput()
 	return bRet;
 }
 
+struct Vertex { // just for fluid sim
+public:
+	Vertex(float x, float y, float z, float u, float v)
+		: x(x), y(y), z(z), u(u), v(v) {};
+private:
+	float x, y, z, u, v;
+};
+
+void updateFluid(FluidSim &fluid, GLuint texture, char * texData, int texSize) {
+	float avgDensity = 0;
+	for (int i = 0; i < texSize; i++) {
+		for (int j = 0; j < texSize; j++) {
+			int pixelIndex = i * texSize + j;
+			int fluidIndex = (i + 1) * (texSize + 2) + j + 1;
+			avgDensity += fluid.p[fluidIndex];
+			uint8_t val = (char)(fluid.p[fluidIndex] * 256);
+			texData[pixelIndex * 4] = (char)(fluid.p[fluidIndex] * 256);
+			texData[pixelIndex * 4 + 1] = 0;
+			texData[pixelIndex * 4 + 2] = 0;
+			texData[pixelIndex * 4 + 3] = 0;
+		}
+	}
+	avgDensity /= texSize * texSize;
+	std::cout << "avg p: " << avgDensity << "\n";
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texSize, texSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+
+	float dt = .02f; //figure this out later
+	fluid.stepVel(dt, 0);
+	fluid.stepDens(dt, 0);
+}
+
 int main(int argc, char *argv[])
 {
 	/*
@@ -47,30 +81,128 @@ int main(int argc, char *argv[])
 	Display display(800, 600, "hello sdl");
 	Renderer renderer(&display);
 	renderer.init();
-
+	
 	Renderer::RenderTarget target(300, 200, 4);
 	Renderer::Model cubes;
 	cubes.cubeTest();
 	cubes.loadBuffers();
 	renderer.addModel(&cubes);
 
-	/*
-	bool bQuit = false;
+	//BEGIN FLUID SIM CODEBLOCK
 
-	SDL_StartTextInput();
-	SDL_ShowCursor(SDL_DISABLE);
+	GLuint vao, vbo;
+	Vertex verts[] = {
+		Vertex(-.5, .5, 0, 0, 0),
+		Vertex(.5, .5, 0, 1, 0),
+		Vertex(-.5, -.5, 0, 0, 1),
+		Vertex(-.5, -.5, 0, 0, 1),
+		Vertex(.5, .5, 0, 1, 0),
+		Vertex(.5, -.5, 0, 1, 1),
+	};
 
-	while (!bQuit)
-	{
-		bQuit = handleInput();
-		renderer.renderFrame();
+	//Vertex Array
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * sizeof(verts), verts, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void *)(3 * sizeof(float)));
+
+	glBindVertexArray(0);
+
+	//Shader Program
+
+	GLuint program = glCreateProgram();
+
+	GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
+	std::string vertSource = readFile("fluid.vs");
+	GLint vertSourceLen = vertSource.length();
+	GLchar* vertSourceC = (GLchar *)vertSource.c_str();
+	glShaderSource(vertShader, 1, &vertSourceC, &vertSourceLen);
+	glCompileShader(vertShader);
+
+	GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+	std::string fragSource = readFile("fluid.fs");
+	GLint fragSourceLen = fragSource.length();
+	GLchar* fragSourceC = (GLchar *)fragSource.c_str();
+	glShaderSource(fragShader, 1, &fragSourceC, &fragSourceLen);
+	glCompileShader(fragShader);
+
+	glAttachShader(program, vertShader);
+	glAttachShader(program, fragShader);
+
+	glBindAttribLocation(program, 0, "postion");
+	glLinkProgram(program);
+	glValidateProgram(program); //what does this do???
+
+	GLuint texUniformHandle = glGetUniformLocation(program, "texture");
+
+	//Texture
+
+	GLuint texture;
+	const int TEX_SIZE = 32;
+	char texData[TEX_SIZE * TEX_SIZE * 4];
+	for (int i = 0; i < TEX_SIZE * TEX_SIZE; i++) {
+		texData[i] = (i % 256);
 	}
-	SDL_StopTextInput();
-	*/
+
+	glGenTextures(1, &texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEX_SIZE, TEX_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+
+	//Fluid
+
+	FluidSim fluid(TEX_SIZE);
+	for (int i = 1; i <= TEX_SIZE; i++) {
+		for (int j = 1; j <= TEX_SIZE; j++) {
+			int k = i * (TEX_SIZE + 2) + j;
+			if (i > 10 && i < 20 && j > 10 && j < 20) {
+				fluid.p[k] = .9;
+				fluid.u[k] = fluid.v[k] = 10;
+			}
+			else {
+				fluid.p[k] = 0;
+				fluid.u[k] = fluid.v[k] = -10;
+			}
+		}
+	}
+
+
+	// END FLUID SIM CODEBLOCK
 
 	while (!display.isClosed()) {
 		renderer.renderFrame();
+
+		// FLUID SIM CODEBLOCK
+
+		glUseProgram(program);
+
+		//Use texture
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glUniform1i(texUniformHandle, 0);
+
+		glBindVertexArray(vao);
+		glDrawArrays(GL_TRIANGLES, 0, sizeof(verts) / sizeof(verts[0]));
+
+		// END FLUID SIM CODEBLOCK
+
 		renderer.updateDisplay();
+
+		updateFluid(fluid, texture, texData, TEX_SIZE);
 	}
 
 	return 0;

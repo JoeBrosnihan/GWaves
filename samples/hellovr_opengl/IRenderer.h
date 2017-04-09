@@ -34,7 +34,7 @@ public:
 	}
 protected:
 	void renderScene() {
-		m->render();
+		//m->render();
 		//for (auto it = models.begin(); it != models.end; ++it) {
 		//	*it->render();
 		//}
