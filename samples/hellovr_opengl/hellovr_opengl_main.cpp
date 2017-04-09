@@ -4,11 +4,12 @@
 
 #include <iostream>
 
-#include "IRenderer.h"
+#include "SDLDisplay.h"
 #include "GLRenderer.h"
 #include "GLRenderTarget.h"
 
 // Use the OpenGL implementation.
+typedef SDLDisplay Display;
 typedef GLRenderer Renderer;
 
 bool handleInput()
@@ -43,11 +44,17 @@ int main(int argc, char *argv[])
 	This is the fix:
 	GLRenderer renderer = GLRenderer();
 	*/
-	Renderer renderer;
+	Display display(800, 600, "hello sdl");
+	Renderer renderer(&display);
 	renderer.init();
 
 	Renderer::RenderTarget target(300, 200, 4);
+	Renderer::Model cubes;
+	cubes.cubeTest();
+	cubes.loadBuffers();
+	renderer.addModel(&cubes);
 
+	/*
 	bool bQuit = false;
 
 	SDL_StartTextInput();
@@ -56,11 +63,15 @@ int main(int argc, char *argv[])
 	while (!bQuit)
 	{
 		bQuit = handleInput();
-
 		renderer.renderFrame();
 	}
-
 	SDL_StopTextInput();
+	*/
+
+	while (!display.isClosed()) {
+		renderer.renderFrame();
+		renderer.updateDisplay();
+	}
 
 	return 0;
 }

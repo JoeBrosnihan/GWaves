@@ -4,12 +4,18 @@
 #include <GL/glew.h>
 #include <iostream>
 
-#include "IRenderer.h"
 #include "GLRenderTarget.h"
+#include "GLModel.h"
 
-class GLRenderer : public IRenderer<GLRenderer, GLRenderTarget> {
+#include "IRenderer.h"
+
+class GLRenderer;
+
+typedef IRenderer<GLRenderer, GLRenderTarget, GLModel> GLRendererParent; //if this causes problems, note that it is not necessary. I did this for convenience
+
+class GLRenderer : public GLRendererParent {
 public:
-	GLRenderer();
+	GLRenderer(IDisplay * display);
 	void init();
 	void renderFrame();
 private: // SDL bookkeeping

@@ -6,8 +6,9 @@
 
 #include "IOUtils.h"
 
-GLRenderer::GLRenderer()
-	: m_pCompanionWindow(NULL)
+GLRenderer::GLRenderer(IDisplay * display)
+	: GLRendererParent(display)
+	, m_pCompanionWindow(NULL)
 	, m_pContext(NULL)
 	, m_nCompanionWindowWidth(640)
 	, m_nCompanionWindowHeight(320)
@@ -19,6 +20,7 @@ GLRenderer::GLRenderer()
 }
 
 void GLRenderer::init() {
+	/* The following is taken care of in the IDipslay creation.
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
 	{
 		printf("%s - SDL could not initialize! SDL Error: %s\n", __FUNCTION__, SDL_GetError());
@@ -59,12 +61,21 @@ void GLRenderer::init() {
 		exit(-1);
 	}
 	glGetError(); // to clear the error caused deep in GLEW
+	*/
 
 	if (!initGL())
 	{
 		printf("%s - Unable to initialize OpenGL!\n", __FUNCTION__);
 		exit(-1);
 	}
+
+	/* Is this necessary? Does it belong here or in the display creation?
+	if (SDL_GL_SetSwapInterval(0) < 0)
+	{
+		printf("%s - Warning: Unable to set VSync! SDL Error: %s\n", __FUNCTION__, SDL_GetError());
+		exit(-1);
+	}
+	*/
 }
 
 bool GLRenderer::initGL() {
@@ -72,13 +83,13 @@ bool GLRenderer::initGL() {
 		"Scene",
 
 		// Vertex Shader
-		readFile("default.vs").c_str(),
+		readFile("bare.vs").c_str(),
 
 
 		// Fragment Shader
-		readFile("default.fs").c_str()
+		readFile("bare.fs").c_str()
 		);
-	m_nSceneMatrixLocation = glGetUniformLocation(m_unSceneProgramID, "matrix");
+	/*m_nSceneMatrixLocation = glGetUniformLocation(m_unSceneProgramID, "matrix");
 	if (m_nSceneMatrixLocation == -1)
 	{
 		dprintf("Unable to find matrix uniform in scene shader\n");
@@ -89,7 +100,7 @@ bool GLRenderer::initGL() {
 	{
 		dprintf("Unable to find time uniform in scene shader\n");
 		return false;
-	}
+	}*/
 
 	m_unCompanionWindowProgramID = compileShader(
 		"CompanionWindow",
@@ -103,8 +114,6 @@ bool GLRenderer::initGL() {
 
 	if (!m_unSceneProgramID || !m_unCompanionWindowProgramID)
 		return false;
-
-
 
 	return true;
 }
@@ -178,13 +187,23 @@ GLuint GLRenderer::compileShader(const char *shaderName, const char *vertexShade
 void GLRenderer::renderFrame() {
 	glClearColor(1, 0, .5f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, m_nCompanionWindowWidth, m_nCompanionWindowHeight);
+	//glEnable(GL_DEPTH_TEST);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glMatrixMode(GL_PROJECTION);
+	gluPerspective(90.f, m_nCompanionWindowWidth / (float) m_nCompanionWindowHeight, 1.f, 1000.f);
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glUseProgram(m_unSceneProgramID);
+	renderScene();
+	glUseProgram(0);
 
 	glFinish();
 
-	SDL_GL_SwapWindow(m_pCompanionWindow);
-
 	// We want to make sure the glFinish waits for the entire present to complete, not just the submission
 	// of the command. So, we do a clear here right here so the glFinish will wait fully for the swap.
-	glClearColor(.5f, 0, 1, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glClearColor(.5f, 0, 1, 1);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
