@@ -90,7 +90,10 @@
     <ClCompile Include="..\shared\Matrices.cpp" />
     <ClCompile Include="..\shared\pathtools.cpp" />
     <ClCompile Include="..\shared\strtools.cpp" />
+    <ClCompile Include="FluidSim.cpp" />
+    <ClCompile Include="GLModel.cpp" />
     <ClCompile Include="GLRenderTarget.cpp" />
+    <ClCompile Include="GLTexture.cpp" />
     <ClCompile Include="IOUtils.cpp" />
     <ClCompile Include="hellovr_opengl_main.cpp" />
     <ClCompile Include="hellovr_opengl_main_valve.cpp">
@@ -98,6 +101,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GLRenderer.cpp" />
+    <ClCompile Include="SDLDisplay.cpp" />
+    <ClCompile Include="GLShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\lodepng.h" />
@@ -105,7 +110,17 @@
     <ClInclude Include="..\shared\pathtools.h" />
     <ClInclude Include="..\shared\strtools.h" />
     <ClInclude Include="..\shared\Vectors.h" />
+    <ClInclude Include="FluidSim.h" />
+    <ClInclude Include="GLModel.h" />
     <ClInclude Include="GLRenderTarget.h" />
+    <ClInclude Include="GLShader.h" />
+    <ClInclude Include="GLTexture.h" />
+    <ClInclude Include="IMaterial.h" />
+    <ClInclude Include="IShader.h" />
+    <ClInclude Include="ITexture.h" />
+    <ClInclude Include="SDLDisplay.h" />
+    <ClInclude Include="IDisplay.h" />
+    <ClInclude Include="IModel.h" />
     <ClInclude Include="IOUtils.h" />
     <ClInclude Include="GLRenderer.h" />
     <ClInclude Include="IRenderer.h" />

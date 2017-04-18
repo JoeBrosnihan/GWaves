@@ -196,7 +196,7 @@ void GLRenderer::renderFrame() {
 	gluPerspective(90.f, display->getWidth() / (float) display->getHeight(), 1.f, 1000.f);
 	glEnableClientState(GL_VERTEX_ARRAY);
 
-	glUseProgram(m_unSceneProgramID);
+	glUseProgram(m_unSceneProgramID); //TODO get rid of me
 	renderScene();
 	glUseProgram(0);
 

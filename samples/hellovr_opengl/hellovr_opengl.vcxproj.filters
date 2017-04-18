@@ -19,6 +19,15 @@
     <Filter Include="Shared">
       <UniqueIdentifier>{8cca1fa3-575c-4e0f-acae-7d4d800be358}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{d8d3871d-eb7e-4ad7-b999-cc7fee9b782a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GL">
+      <UniqueIdentifier>{ad8fc68d-03d0-4248-9101-38c023fc2268}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GL">
+      <UniqueIdentifier>{35232c4a-146d-4720-9bc4-a5129e6f9cb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\shared\lodepng.cpp">
@@ -42,11 +51,26 @@
     <ClCompile Include="IOUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GLModel.cpp">
+      <Filter>Source Files\GL</Filter>
+    </ClCompile>
     <ClCompile Include="GLRenderer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GL</Filter>
     </ClCompile>
     <ClCompile Include="GLRenderTarget.cpp">
+      <Filter>Source Files\GL</Filter>
+    </ClCompile>
+    <ClCompile Include="SDLDisplay.cpp">
+      <Filter>Source Files\GL</Filter>
+    </ClCompile>
+    <ClCompile Include="FluidSim.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GLTexture.cpp">
+      <Filter>Source Files\GL</Filter>
+    </ClCompile>
+    <ClCompile Include="GLShader.cpp">
+      <Filter>Source Files\GL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -65,20 +89,50 @@
     <ClInclude Include="..\shared\strtools.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="IModel.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderer.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderTarget.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="IDisplay.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GLModel.h">
+      <Filter>Header Files\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="GLRenderer.h">
+      <Filter>Header Files\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="GLRenderTarget.h">
+      <Filter>Header Files\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="SDLDisplay.h">
+      <Filter>Header Files\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="FluidSim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="IOUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IRenderer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="ITexture.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="GLRenderer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="GLTexture.h">
+      <Filter>Header Files\GL</Filter>
     </ClInclude>
-    <ClInclude Include="IRenderTarget.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="IShader.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="GLRenderTarget.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="GLShader.h">
+      <Filter>Header Files\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="IMaterial.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

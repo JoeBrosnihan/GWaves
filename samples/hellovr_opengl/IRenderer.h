@@ -13,8 +13,7 @@ public:
 
 	// Adds a renderable model to the scene
 	void addModel(IModel* model) {
-		//models.pushBack(model);
-		m = model;
+		models.push_back(model);
 	}
 
 	virtual void init() = 0;
@@ -25,15 +24,13 @@ public:
 	}
 protected:
 	void renderScene() {
-		//m->render();
-		//for (auto it = models.begin(); it != models.end; ++it) {
-		//	*it->render();
-		//}
+		for (auto it = models.begin(); it != models.end(); ++it) {
+			(*it)->render();
+		}
 	};
 	IRenderTarget* rendertarget;
 	IDisplay* display;
 
 	//scene
-	IModel* m;
-	//std::vector
+	std::vector<IModel*> models;
 };

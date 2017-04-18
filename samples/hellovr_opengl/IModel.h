@@ -3,10 +3,23 @@
 #include <vector>
 #include "Shared/Matrices.h"
 #include "Shared/Vectors.h"
+#include "IMaterial.h"
+
+
 
 class IModel {
 public:
-	void addFace(Vector3 a, Vector3 b, Vector3 c) {
+	struct Vertex {
+		float x, y, z, nx, ny, nz, u, v;
+		Vertex(float x, float y, float z, float nx, float ny, float nz, float u, float v)
+			: x(x), y(y), z(z), nx(nx), ny(ny), nz(nz), u(u), v(v) {};
+	};
+
+	IModel() : vertices(), material(nullptr) {}; // Is vertices() necessary?
+
+	void setMaterial(IMaterial* material) { this->material = material; }
+
+	void addFace(Vertex a, Vertex b, Vertex c) {
 		vertices.push_back(a);
 		vertices.push_back(b);
 		vertices.push_back(c);
@@ -27,11 +40,12 @@ public:
 	virtual void loadBuffers() = 0;
 	
 protected:
-	std::vector<Vector3> vertices;
+	std::vector<Vertex> vertices;
+	IMaterial* material;
 
 private:
 	void AddCubeVertex(float x, float y, float z, float u, float v, int unused) {
-		vertices.push_back(Vector3(x, y, z));
+		vertices.push_back(Vertex(x, y, z, 0, 0, 0, 0, 0));
 	};
 
 	void addCube(Matrix4 &mat) {
