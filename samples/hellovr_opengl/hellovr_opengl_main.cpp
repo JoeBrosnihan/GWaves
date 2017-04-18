@@ -10,9 +10,12 @@
 #include "IOUtils.h"
 #include "FluidSim.h"
 
+#include "GLTexture.h"
+
 // Use the OpenGL implementation.
 typedef SDLDisplay Display;
 typedef GLRenderer Renderer;
+typedef GLTexture Texture;
 
 bool handleInput()
 {
@@ -45,7 +48,7 @@ private:
 	float x, y, z, u, v;
 };
 
-void updateFluid(FluidSim &fluid, GLuint texture, char * texData, int texSize) {
+void updateFluid(FluidSim &fluid, Texture& texture, char * texData, int texSize) {
 	float avgDensity = 0;
 	for (int i = 0; i < texSize; i++) {
 		for (int j = 0; j < texSize; j++) {
@@ -62,7 +65,7 @@ void updateFluid(FluidSim &fluid, GLuint texture, char * texData, int texSize) {
 	avgDensity /= texSize * texSize;
 	std::cout << "avg p: " << avgDensity << "\n";
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texSize, texSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+	texture.update(texData);
 
 	float dt = .02f; //figure this out later
 	fluid.stepVel(dt, 0);
@@ -82,8 +85,8 @@ int main(int argc, char *argv[])
 	Renderer renderer(&display);
 	renderer.init();
 	
-	Renderer::RenderTarget target(300, 200, 4);
-	Renderer::Model cubes;
+	GLRenderTarget target(300, 200, 4);
+	GLModel cubes;
 	cubes.cubeTest();
 	cubes.loadBuffers();
 	renderer.addModel(&cubes);
@@ -118,50 +121,55 @@ int main(int argc, char *argv[])
 
 	//Shader Program
 
-	GLuint program = glCreateProgram();
+	if (false) {
+		GLuint program = glCreateProgram();
 
-	GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
-	std::string vertSource = readFile("fluid.vs");
-	GLint vertSourceLen = vertSource.length();
-	GLchar* vertSourceC = (GLchar *)vertSource.c_str();
-	glShaderSource(vertShader, 1, &vertSourceC, &vertSourceLen);
-	glCompileShader(vertShader);
+		GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
+		std::string vertSource = readFile("fluid.vs");
+		GLint vertSourceLen = vertSource.length();
+		GLchar* vertSourceC = (GLchar *)vertSource.c_str();
+		glShaderSource(vertShader, 1, &vertSourceC, &vertSourceLen);
+		glCompileShader(vertShader);
 
-	GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	std::string fragSource = readFile("fluid.fs");
-	GLint fragSourceLen = fragSource.length();
-	GLchar* fragSourceC = (GLchar *)fragSource.c_str();
-	glShaderSource(fragShader, 1, &fragSourceC, &fragSourceLen);
-	glCompileShader(fragShader);
+		GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+		std::string fragSource = readFile("fluid.fs");
+		GLint fragSourceLen = fragSource.length();
+		GLchar* fragSourceC = (GLchar *)fragSource.c_str();
+		glShaderSource(fragShader, 1, &fragSourceC, &fragSourceLen);
+		glCompileShader(fragShader);
 
-	glAttachShader(program, vertShader);
-	glAttachShader(program, fragShader);
+		glAttachShader(program, vertShader);
+		glAttachShader(program, fragShader);
 
-	glBindAttribLocation(program, 0, "postion");
-	glLinkProgram(program);
-	glValidateProgram(program); //what does this do???
+		glBindAttribLocation(program, 0, "postion");
+		glLinkProgram(program);
+		glValidateProgram(program); //what does this do???
 
-	GLuint texUniformHandle = glGetUniformLocation(program, "texture");
+		GLuint texUniformHandle = glGetUniformLocation(program, "texture");
+	}
+
+	// Material
+
+	GLShader vertShader(VERTEX_SHADER);
+	vertShader.loadSource(readFile("fluid.vs"));
+
+	GLShader fragShader(FRAGMENT_SHADER);
+	fragShader.loadSource(readFile("fluid.fs"));
+
+	GLProgram fluidProgram(&vertShader, &fragShader);
+	fluidProgram.link();
+
+	IMaterial fluidMaterial(&fluidProgram);
 
 	//Texture
 
-	GLuint texture;
 	const int TEX_SIZE = 32;
 	char texData[TEX_SIZE * TEX_SIZE * 4];
 	for (int i = 0; i < TEX_SIZE * TEX_SIZE; i++) {
 		texData[i] = (i % 256);
 	}
-
-	glGenTextures(1, &texture);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEX_SIZE, TEX_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+	GLTexture texture(TEX_SIZE, TEX_SIZE, texData);
+	fluidMaterial.setTexture("texture", &texture);
 
 	//Fluid
 
@@ -180,12 +188,11 @@ int main(int argc, char *argv[])
 		}
 	}
 
-
 	// END FLUID SIM CODEBLOCK
 
 	while (!display.isClosed()) {
 		renderer.renderFrame();
-
+		/*
 		// FLUID SIM CODEBLOCK
 
 		glUseProgram(program);
@@ -194,6 +201,9 @@ int main(int argc, char *argv[])
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glUniform1i(texUniformHandle, 0);
+		*/
+
+		fluidMaterial.useMaterial();
 
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, sizeof(verts) / sizeof(verts[0]));

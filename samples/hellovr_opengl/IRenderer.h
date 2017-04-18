@@ -7,27 +7,18 @@ This class follows the CRTP to avoid virtual function call overhead.
 
 #include "IDisplay.h"
 
-template <typename Impl, typename RenderTarget, typename Model>
 class IRenderer {
 public:
-	typedef RenderTarget RenderTarget;
-	typedef Model Model;
-
-	IRenderer(IDisplay * display) : display(display) {}
+	IRenderer(IDisplay* display) : display(display) {}
 
 	// Adds a renderable model to the scene
-	void addModel(Model* model) {
+	void addModel(IModel* model) {
 		//models.pushBack(model);
 		m = model;
 	}
 
-	void init() {
-		static_cast<Impl*>(this)->init();
-	};
-
-	void renderFrame() {
-		static_cast<Impl*>(this)->renderFrame();
-	};
+	virtual void init() = 0;
+	virtual void renderFrame() = 0;
 
 	void updateDisplay() {
 		display->update();
@@ -39,10 +30,10 @@ protected:
 		//	*it->render();
 		//}
 	};
-	RenderTarget *rendertarget;
-	IDisplay *display;
+	IRenderTarget* rendertarget;
+	IDisplay* display;
 
 	//scene
-	Model* m;
+	IModel* m;
 	//std::vector
 };

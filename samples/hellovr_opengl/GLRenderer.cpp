@@ -7,11 +7,11 @@
 #include "IOUtils.h"
 
 GLRenderer::GLRenderer(IDisplay * display)
-	: GLRendererParent(display)
-	, m_pCompanionWindow(NULL)
-	, m_pContext(NULL)
-	, m_nCompanionWindowWidth(640)
-	, m_nCompanionWindowHeight(320)
+	: IRenderer(display)
+	//, m_pCompanionWindow(NULL)
+	//, m_pContext(NULL)
+	//, m_nCompanionWindowWidth(640)
+	//, m_nCompanionWindowHeight(320)
 	, m_unSceneProgramID(0)
 	, m_nSceneMatrixLocation(-1)
 	, m_unCompanionWindowProgramID(0)
@@ -187,13 +187,13 @@ GLuint GLRenderer::compileShader(const char *shaderName, const char *vertexShade
 void GLRenderer::renderFrame() {
 	glClearColor(1, 0, .5f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, m_nCompanionWindowWidth, m_nCompanionWindowHeight);
+	glViewport(0, 0, display->getWidth(), display->getHeight());
 	//glEnable(GL_DEPTH_TEST);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glMatrixMode(GL_PROJECTION);
-	gluPerspective(90.f, m_nCompanionWindowWidth / (float) m_nCompanionWindowHeight, 1.f, 1000.f);
+	gluPerspective(90.f, display->getWidth() / (float) display->getHeight(), 1.f, 1000.f);
 	glEnableClientState(GL_VERTEX_ARRAY);
 
 	glUseProgram(m_unSceneProgramID);

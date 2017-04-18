@@ -23,11 +23,9 @@ public:
 		}
 	};
 
-	// These must be implemented by the derived class
-	void render();
-	void loadBuffers();
-	// END
-
+	virtual void render() = 0;
+	virtual void loadBuffers() = 0;
+	
 protected:
 	std::vector<Vector3> vertices;
 

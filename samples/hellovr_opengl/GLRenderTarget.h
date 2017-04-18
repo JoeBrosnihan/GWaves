@@ -1,8 +1,8 @@
 #pragma once
 
-#include <GL/glew.h>
-
 #include "IRenderTarget.h"
+
+#include <GL/glew.h>
 
 class GLRenderTarget : IRenderTarget
 {

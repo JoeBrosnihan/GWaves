@@ -9,6 +9,8 @@ public:
 	virtual void update() = 0;
 	virtual ~IDisplay() {}
 	bool isClosed() { return closed; }
+	int getWidth() { return width; }
+	int getHeight() { return height; }
 private:
 	int width;
 	int height;

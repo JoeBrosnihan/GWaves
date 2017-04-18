@@ -5,8 +5,8 @@
 
 class GLModel : public IModel {
 public:
-	void render();
-	void loadBuffers();
+	virtual void render();
+	virtual void loadBuffers();
 private:
 	GLuint vertexArrayObject;
 	GLuint vertexBuffer;

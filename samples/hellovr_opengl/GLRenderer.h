@@ -6,24 +6,26 @@
 
 #include "GLRenderTarget.h"
 #include "GLModel.h"
+#include "GLShader.h"
+#include "GLTexture.h"
+#include "IMaterial.h"
 
 #include "IRenderer.h"
 
-class GLRenderer;
 
-typedef IRenderer<GLRenderer, GLRenderTarget, GLModel> GLRendererParent; //if this causes problems, note that it is not necessary. I did this for convenience
-
-class GLRenderer : public GLRendererParent {
+class GLRenderer : public IRenderer {
 public:
 	GLRenderer(IDisplay * display);
-	void init();
-	void renderFrame();
+	virtual void init();
+	virtual void renderFrame();
+	/*
 private: // SDL bookkeeping
 	SDL_Window *m_pCompanionWindow;
 	uint32_t m_nCompanionWindowWidth;
 	uint32_t m_nCompanionWindowHeight;
-
-	SDL_GLContext m_pContext;
+	
+	SDL_GLContext m_pContext; //obsolete! remove!
+	*/
 private: // GL bookkeeping
 	GLuint m_unSceneProgramID;
 	GLuint m_nSceneMatrixLocation;
