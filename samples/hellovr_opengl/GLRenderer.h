@@ -17,7 +17,8 @@ class GLRenderer : public IRenderer {
 public:
 	GLRenderer(IDisplay * display);
 	virtual void init();
-	virtual void renderFrame();
+	virtual void renderToDisplay();
+	virtual void renderTo(IRenderTarget* target);
 	/*
 private: // SDL bookkeeping
 	SDL_Window *m_pCompanionWindow;
@@ -34,4 +35,5 @@ private: // GL bookkeeping
 private:
 	bool initGL();
 	GLuint compileShader(const char *shaderName, const char *vertexShader, const char *fragmentShader);
+	void render();
 };

@@ -22,3 +22,19 @@ GLRenderTarget::GLRenderTarget(int width, int height, int nSamples)
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+
+GLRenderTarget::GLRenderTarget(GLTexture* target) : IRenderTarget(target) {
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+	// Do I need to create a depth buffer every time? If so, do that here.
+
+	glBindTexture(GL_TEXTURE_2D, target->getTextureObject());
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, target->getTextureObject(), 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void GLRenderTarget::useTarget() {
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+}

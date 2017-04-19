@@ -141,8 +141,17 @@ int main(int argc, char *argv[])
 
 	// END FLUID SIM CODEBLOCK
 
+	GLTexture rt(32, 32, nullptr);
+	GLRenderTarget framebuffer(&rt);
+
+	framebuffer.useTarget();
+	renderer.renderTo(&framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	fluidMaterial.setTexture("texture", &rt);
+
 	while (!display.isClosed()) {
-		renderer.renderFrame();
+		renderer.renderToDisplay();
 
 		renderer.updateDisplay();
 

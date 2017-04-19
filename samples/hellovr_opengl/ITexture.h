@@ -3,6 +3,8 @@
 class ITexture {
 public:
 	ITexture(int width, int height) : width(width), height(height) {};
-protected:
+	int getWidth() { return width; }
+	int getHeight() { return height; }
+private:
 	int width, height;
 };

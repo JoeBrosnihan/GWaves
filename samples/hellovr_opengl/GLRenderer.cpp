@@ -184,26 +184,38 @@ GLuint GLRenderer::compileShader(const char *shaderName, const char *vertexShade
 	return unProgramID;
 }
 
-void GLRenderer::renderFrame() {
-	glClearColor(1, 0, .5f, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void GLRenderer::renderToDisplay() {
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, display->getWidth(), display->getHeight());
-	//glEnable(GL_DEPTH_TEST);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
-	gluPerspective(90.f, display->getWidth() / (float) display->getHeight(), 1.f, 1000.f);
-	glEnableClientState(GL_VERTEX_ARRAY);
-
-	glUseProgram(m_unSceneProgramID); //TODO get rid of me
-	renderScene();
-	glUseProgram(0);
-
+	render();
 	glFinish();
 
 	// We want to make sure the glFinish waits for the entire present to complete, not just the submission
 	// of the command. So, we do a clear here right here so the glFinish will wait fully for the swap.
 	//glClearColor(.5f, 0, 1, 1);
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void GLRenderer::renderTo(IRenderTarget* target) {
+	target->useTarget();
+	glViewport(0, 0, target->getWidth(), target->getHeight());
+	render();
+}
+
+void GLRenderer::render() {
+	static float flop = 0;
+	flop = !flop;
+	glClearColor(flop, 0, .5f, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glEnable(GL_DEPTH_TEST);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glMatrixMode(GL_PROJECTION);
+	gluPerspective(90.f, display->getWidth() / (float)display->getHeight(), 1.f, 1000.f);
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glUseProgram(m_unSceneProgramID); //TODO get rid of me
+	renderScene();
+	glUseProgram(0);
 }

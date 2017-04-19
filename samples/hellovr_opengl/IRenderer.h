@@ -17,7 +17,8 @@ public:
 	}
 
 	virtual void init() = 0;
-	virtual void renderFrame() = 0;
+	virtual void renderToDisplay() = 0;
+	virtual void renderTo(IRenderTarget* target) = 0;
 
 	void updateDisplay() {
 		display->update();
