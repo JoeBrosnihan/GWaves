@@ -1,0 +1,11 @@
+.vs
+bin
+*.db
+*.opensdf
+*.sdf
+*.aps
+*.rc
+*.vcxproj.user
+*.cd
+hellovr_opengl/Debug
+hellovr_opengl/resource.h
