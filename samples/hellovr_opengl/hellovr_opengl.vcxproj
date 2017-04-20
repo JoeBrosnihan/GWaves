@@ -91,6 +91,7 @@
     <ClCompile Include="..\shared\pathtools.cpp" />
     <ClCompile Include="..\shared\strtools.cpp" />
     <ClCompile Include="FluidSim.cpp" />
+    <ClCompile Include="FluidSimGPU.cpp" />
     <ClCompile Include="GLModel.cpp" />
     <ClCompile Include="GLRenderTarget.cpp" />
     <ClCompile Include="GLTexture.cpp" />
@@ -111,6 +112,7 @@
     <ClInclude Include="..\shared\strtools.h" />
     <ClInclude Include="..\shared\Vectors.h" />
     <ClInclude Include="FluidSim.h" />
+    <ClInclude Include="FluidSimGPU.h" />
     <ClInclude Include="GLModel.h" />
     <ClInclude Include="GLRenderTarget.h" />
     <ClInclude Include="GLShader.h" />

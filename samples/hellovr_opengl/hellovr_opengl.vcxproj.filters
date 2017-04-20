@@ -72,6 +72,9 @@
     <ClCompile Include="GLShader.cpp">
       <Filter>Source Files\GL</Filter>
     </ClCompile>
+    <ClCompile Include="FluidSimGPU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\lodepng.h">
@@ -133,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="IMaterial.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="FluidSimGPU.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

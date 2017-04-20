@@ -10,6 +10,7 @@
 #include "IOUtils.h"
 #include "FluidSim.h"
 #include "IModel.h"
+#include "FluidSimGPU.h"
 
 #include "GLTexture.h"
 
@@ -102,18 +103,18 @@ int main(int argc, char *argv[])
 	vertShader.loadSource(readFile("fluid.vs"));
 
 	GLShader fragShader(FRAGMENT_SHADER);
-	fragShader.loadSource(readFile("fluid.fs"));
+	fragShader.loadSource(readFile("fluid/display.fs"));
 
 	GLProgram fluidProgram(&vertShader, &fragShader);
 	fluidProgram.link();
 
-	IMaterial fluidMaterial(&fluidProgram);
-
-	quad.setMaterial(&fluidMaterial);
 	renderer.addModel(&quad);
 
-	//Texture
+	FluidSimGPU fluidSim(32, &fluidProgram);
+	quad.setMaterial(&fluidSim.displayMaterial);
 
+	//Texture
+	/*
 	const int TEX_SIZE = 32;
 	char texData[TEX_SIZE * TEX_SIZE * 4];
 	for (int i = 0; i < TEX_SIZE * TEX_SIZE; i++) {
@@ -138,24 +139,26 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
-
+	*/
 	// END FLUID SIM CODEBLOCK
-
-	GLTexture rt(32, 32, nullptr);
+	/*
+	GLTexture rt(32, 32, RGBA, nullptr);
 	GLRenderTarget framebuffer(&rt);
 
 	framebuffer.useTarget();
 	renderer.renderTo(&framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	*/
 
-	fluidMaterial.setTexture("texture", &rt);
+	//fluidMaterial.setTexture("texture", &rt);
 
 	while (!display.isClosed()) {
 		renderer.renderToDisplay();
 
 		renderer.updateDisplay();
 
-		updateFluid(fluid, texture, texData, TEX_SIZE);
+		fluidSim.step(&renderer, .016f);
+		//updateFluid(fluid, texture, texData, TEX_SIZE);
 	}
 
 	return 0;

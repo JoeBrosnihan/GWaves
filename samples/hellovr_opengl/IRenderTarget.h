@@ -8,6 +8,8 @@ Holds a render target framebuffer.
 
 class IRenderTarget {
 public:
+	IRenderTarget() {};
+
 	IRenderTarget(int width, int height, int nSamples)
 		: target(nullptr),
 		width(width),

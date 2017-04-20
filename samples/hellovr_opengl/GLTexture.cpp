@@ -1,7 +1,7 @@
 
 #include "GLTexture.h"
 
-GLTexture::GLTexture(int width, int height, const char *texData) : ITexture(width, height) {
+GLTexture::GLTexture(int width, int height, TextureFormat format, const char *texData) : ITexture(width, height) {
 	glGenTextures(1, &texture);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -12,7 +12,15 @@ GLTexture::GLTexture(int width, int height, const char *texData) : ITexture(widt
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+	switch (format)
+	{
+	case RGBA:
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+		break;
+	case R32F:
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, width, height, 0, GL_RED, GL_FLOAT, texData);
+		break;
+	}
 }
 
 void GLTexture::update(const char* texData) {

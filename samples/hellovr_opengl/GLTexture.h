@@ -6,7 +6,8 @@
 
 class GLTexture : public ITexture {
 public:
-	GLTexture(int width, int height, const char* texData);
+	GLTexture() {};
+	GLTexture(int width, int height, TextureFormat format, const char* texData);
 	void update(const char* texData);
 	GLuint getTextureObject() const { return texture; };
 private:

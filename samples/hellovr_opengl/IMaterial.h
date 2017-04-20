@@ -12,6 +12,8 @@ A Material is a shader program together with a set of values for the shader para
 
 class IMaterial {
 public:
+	IMaterial() : program(nullptr), textureParameters() {}
+
 	IMaterial(const IProgram* program) : program(program), textureParameters() {}
 
 	void useMaterial() {

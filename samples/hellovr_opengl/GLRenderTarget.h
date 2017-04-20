@@ -8,6 +8,7 @@
 class GLRenderTarget : public IRenderTarget
 {
 public:
+	GLRenderTarget() {};
 	GLRenderTarget(int width, int height, int nSamples);
 	GLRenderTarget(GLTexture* target);
 	virtual void useTarget();
