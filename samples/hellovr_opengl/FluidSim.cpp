@@ -42,8 +42,6 @@ void diffuse(int N, int b, std::vector<float> &x, std::vector<float> &x0, float 
 		for (i = 1; i <= N; i++) {
 			for (j = 1; j <= N; j++) {
 				int index = IX(i, j);
-				float newVal = (x0[IX(i, j)] + a*(x[IX(i - 1, j)] + x[IX(i + 1, j)] +
-					x[IX(i, j - 1)] + x[IX(i, j + 1)])) / (1 + 4 * a);
 				x[IX(i, j)] = (x0[IX(i, j)] + a*(x[IX(i - 1, j)] + x[IX(i + 1, j)] +
 					x[IX(i, j - 1)] + x[IX(i, j + 1)])) / (1 + 4 * a);
 			}

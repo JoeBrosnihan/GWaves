@@ -88,13 +88,13 @@ int main(int argc, char *argv[])
 	
 	GLModel quad;
 	quad.addFace(
-		IModel::Vertex(-.5, .5, 0, 0, 0, 0, 0, 0),
-		IModel::Vertex(.5, .5, 0, 0, 0, 0, 1, 0),
-		IModel::Vertex(-.5, -.5, 0, 0, 0, 0, 0, 1));
+		IModel::Vertex(-.5, .5, 0, 0, 0, 0, 0, 1),
+		IModel::Vertex(.5, .5, 0, 0, 0, 0, 1, 1),
+		IModel::Vertex(-.5, -.5, 0, 0, 0, 0, 0, 0));
 	quad.addFace(
-		IModel::Vertex(-.5, -.5, 0, 0, 0, 0, 0, 1),
-		IModel::Vertex(.5, .5, 0, 0, 0, 0, 1, 0),
-		IModel::Vertex(.5, -.5, 0, 0, 0, 0, 1, 1));
+		IModel::Vertex(-.5, -.5, 0, 0, 0, 0, 0, 0),
+		IModel::Vertex(.5, .5, 0, 0, 0, 0, 1, 1),
+		IModel::Vertex(.5, -.5, 0, 0, 0, 0, 1, 0));
 	quad.loadBuffers();
 	
 	// Material
@@ -113,16 +113,7 @@ int main(int argc, char *argv[])
 	FluidSimGPU fluidSim(32, &fluidProgram);
 	quad.setMaterial(&fluidSim.displayMaterial);
 
-	//Texture
 	/*
-	const int TEX_SIZE = 32;
-	char texData[TEX_SIZE * TEX_SIZE * 4];
-	for (int i = 0; i < TEX_SIZE * TEX_SIZE; i++) {
-		texData[i] = (i % 256);
-	}
-	GLTexture texture(TEX_SIZE, TEX_SIZE, texData);
-	fluidMaterial.setTexture("texture", &texture);
-
 	//Fluid
 
 	FluidSim fluid(TEX_SIZE);
@@ -141,24 +132,12 @@ int main(int argc, char *argv[])
 	}
 	*/
 	// END FLUID SIM CODEBLOCK
-	/*
-	GLTexture rt(32, 32, RGBA, nullptr);
-	GLRenderTarget framebuffer(&rt);
-
-	framebuffer.useTarget();
-	renderer.renderTo(&framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	*/
-
-	//fluidMaterial.setTexture("texture", &rt);
 
 	while (!display.isClosed()) {
 		renderer.renderToDisplay();
 
 		renderer.updateDisplay();
-
 		fluidSim.step(&renderer, .016f);
-		//updateFluid(fluid, texture, texData, TEX_SIZE);
 	}
 
 	return 0;

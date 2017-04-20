@@ -18,10 +18,12 @@ private:
 
 class GLProgram : public IProgram {
 public:
+	GLProgram() {}
 	GLProgram(const GLShader* vertexShader, const GLShader* fragmentShader);
 	virtual void link();
 	virtual void useProgram() const;
 	virtual void setTexture(const std::string &param, const ITexture* texture) const;
+	virtual void setFloat(const std::string &param, float value) const;
 private:
 	GLuint programObject;
 };

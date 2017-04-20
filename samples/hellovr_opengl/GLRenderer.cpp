@@ -198,14 +198,13 @@ void GLRenderer::renderToDisplay() {
 
 void GLRenderer::renderTo(IRenderTarget* target) {
 	target->useTarget();
-	glViewport(0, 0, target->getWidth(), target->getHeight());
 	render();
 }
 
 void GLRenderer::render() {
 	static float flop = 0;
-	flop = !flop;
-	glClearColor(flop, 0, .5f, 1);
+	flop = !flop * .25f;
+	glClearColor(flop, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glEnable(GL_DEPTH_TEST);
 

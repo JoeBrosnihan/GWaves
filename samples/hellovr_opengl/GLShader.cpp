@@ -1,5 +1,7 @@
 
 #include "GLShader.h"
+#include <iostream>
+#include "IOUtils.h"
 
 GLShader::GLShader(ShaderType shaderType) : IShader(shaderType), shaderObject(0) {};
 
@@ -16,6 +18,20 @@ void GLShader::loadSource(const std::string &source) {
 	GLchar* sourceCStr = (GLchar *) source.c_str();
 	glShaderSource(shaderObject, 1, &sourceCStr, &sourceLen);
 	glCompileShader(shaderObject);
+
+	GLint vShaderCompiled = GL_FALSE;
+	glGetShaderiv(shaderObject, GL_COMPILE_STATUS, &vShaderCompiled);
+	if (vShaderCompiled != GL_TRUE)
+	{
+		dprintf("Unable to compile shader!\n");
+
+		GLchar infoLog[5000] = { 0 };
+		GLint infoLogLength;
+		glGetShaderInfoLog(shaderObject, sizeof(infoLog) - 1, &infoLogLength, infoLog);
+		dprintf("%s\n", infoLog);
+
+		glDeleteShader(shaderObject);
+	}
 }
 
 
@@ -30,9 +46,29 @@ void GLProgram::link() {
 	glAttachShader(programObject, static_cast<const GLShader*>(vertexShader)->getShaderObject());
 	glAttachShader(programObject, static_cast<const GLShader*>(fragmentShader)->getShaderObject());
 
-	glBindAttribLocation(programObject, 0, "postion"); // should not assume this. In fact, it is not needed since it is declared in the GLSL code. remove this c++ code
 	glLinkProgram(programObject);
+
+	GLint programSuccess = GL_FALSE;
+	glGetProgramiv(programObject, GL_LINK_STATUS, &programSuccess);
+	if (programSuccess != GL_TRUE)
+	{
+		dprintf("Error linking program!\n");
+
+		GLchar infoLog[5000] = { 0 };
+		GLint infoLogLength;
+		glGetProgramInfoLog(programObject, sizeof(infoLog) - 1, &infoLogLength, infoLog);
+		dprintf("%s\n", infoLog);
+
+		glDeleteProgram(programObject);
+	}
+
 	glValidateProgram(programObject); //what does this do???
+	glGetProgramiv(programObject, GL_VALIDATE_STATUS, &programSuccess);
+	if (programSuccess != GL_TRUE)
+	{
+		dprintf("Error validating program!\n");
+		//glDeleteProgram(programObject);
+	}
 }
 
 void GLProgram::useProgram() const {
@@ -46,4 +82,10 @@ void GLProgram::setTexture(const std::string &param, const ITexture* texture) co
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, glTexture->getTextureObject());
 	glUniform1i(uniformHandle, 1);
+}
+
+void GLProgram::setFloat(const std::string &param, float value) const
+{
+	GLuint uniformHandle = glGetUniformLocation(programObject, (GLchar*)param.c_str());
+	glUniform1f(uniformHandle, value);
 }

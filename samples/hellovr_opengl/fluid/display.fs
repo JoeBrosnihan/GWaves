@@ -12,5 +12,4 @@ void main()
 {
 	float val = texture2D(texture, texCoord).r;
    outputColor = vec4(0.0, 0.0, val, 1.0);
-   //outputColor = texture2D(texture, texCoord);
 }

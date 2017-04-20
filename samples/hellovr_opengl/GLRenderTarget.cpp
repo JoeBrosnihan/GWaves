@@ -37,4 +37,5 @@ GLRenderTarget::GLRenderTarget(GLTexture* target) : IRenderTarget(target) {
 
 void GLRenderTarget::useTarget() {
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glViewport(0, 0, getWidth(), getHeight());
 }
