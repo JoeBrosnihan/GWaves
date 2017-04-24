@@ -6,8 +6,8 @@
 void GLModel::render(const Matrix4 &viewProj) {
 	this->material->useMaterial();
 
-	Matrix4 mvp = viewProj * transform;
-	this->material->getProgram()->setMat4("MVP", mvp);
+	this->material->getProgram()->setMat4("mat_model", transform);
+	this->material->getProgram()->setMat4("mat_viewproj", viewProj);
 
 	glBindVertexArray(vertexArrayObject);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);

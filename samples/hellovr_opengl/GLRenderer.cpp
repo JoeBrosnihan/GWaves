@@ -202,9 +202,7 @@ void GLRenderer::renderTo(IRenderTarget* target) {
 }
 
 void GLRenderer::render() {
-	static float flop = 0;
-	flop = !flop * .25f;
-	glClearColor(flop, 0, 0, 1);
+	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 

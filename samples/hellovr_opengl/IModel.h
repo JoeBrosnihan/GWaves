@@ -13,6 +13,8 @@ public:
 		float x, y, z, nx, ny, nz, u, v;
 		Vertex(float x, float y, float z, float nx, float ny, float nz, float u, float v)
 			: x(x), y(y), z(z), nx(nx), ny(ny), nz(nz), u(u), v(v) {};
+		Vertex(Vector4 &position, Vector4 &normal, float u, float v)
+			: x(position.x), y(position.y), z(position.z), nx(normal.x), ny(normal.y), nz(normal.z), u(u), v(v) {};
 	};
 
 	IModel() : vertices(), material(nullptr), transform() {}; // Is vertices() necessary?
@@ -24,6 +26,24 @@ public:
 		vertices.push_back(b);
 		vertices.push_back(c);
 	};
+
+	void addSphere(float radius) {
+		const float pi = 180.0f;
+		Matrix4 rot = Matrix4();
+		rot = rot.scale(radius);
+		addUnitSpherePart(rot);
+		rot.rotateY(pi * .5f);
+		addUnitSpherePart(rot);
+		rot.rotateY(pi * .5f);
+		addUnitSpherePart(rot);
+		rot.rotateY(pi * .5f);
+		addUnitSpherePart(rot);
+		rot.rotateY(pi * .5f);
+		rot.rotateX(pi * .5f);
+		addUnitSpherePart(rot);
+		rot.rotateX(pi);
+		addUnitSpherePart(rot);
+	}
 
 	//create test model
 	void cubeTest() {
@@ -105,4 +125,42 @@ private:
 		AddCubeVertex(G.x, G.y, G.z, 0, 0, vertdata);
 		AddCubeVertex(F.x, F.y, F.z, 0, 1, vertdata);
 	};
+
+	void addUnitSpherePart(const Matrix4 &mat) {
+		const int RESOLUTION = 10;
+		const float step = 2.0f / RESOLUTION;
+		const float tstep = 1.0f / RESOLUTION;
+		for (int i = 0; i < RESOLUTION; i++) {
+			for (int j = 0; j < RESOLUTION; j++) {
+				float x = i * step - 1;
+				float y = j * step - 1;
+				float u = i * tstep;
+				float v = j * tstep;
+				Vector4 upperLeft(x, y + step, 1, 0), upperRight(x + step, y + step, 1, 0), lowerLeft(x, y, 1, 0), lowerRight(x + step, y, 1, 0);
+				upperLeft = mat * upperLeft.normalize();
+				upperRight = mat * upperRight.normalize();
+				lowerLeft = mat * lowerLeft.normalize();
+				lowerRight = mat * lowerRight.normalize();
+				Vector4 uln(upperLeft), urn(upperRight), lln(lowerLeft), lrn(lowerRight);
+				uln.normalize();
+				urn.normalize();
+				lln.normalize();
+				lrn.normalize();
+				addFace(
+					// upper left
+					IModel::Vertex(upperLeft, uln, u, v + tstep),
+					// upper right
+					IModel::Vertex(upperRight, urn, u + tstep, v + tstep),
+					// lower left
+					IModel::Vertex(lowerLeft, lln, u, v));
+				addFace(
+					// lower left
+					IModel::Vertex(lowerLeft, lln, u, v),
+					// upper right
+					IModel::Vertex(upperRight, urn, u + tstep, v + tstep),
+					// lower right
+					IModel::Vertex(lowerRight, lrn, u + tstep, v));
+			}
+		}
+	}
 };

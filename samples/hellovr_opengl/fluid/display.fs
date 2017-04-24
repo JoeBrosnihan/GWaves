@@ -9,5 +9,5 @@ out vec4 outputColor;
 void main()
 {
 	float val = texture2D(texture, texCoord).r;
-	outputColor = vec4(val, 0.0, 0.0, 1.0);
+	outputColor = vec4(val, .5 * val * val * val, 0.0, 1.0);
 }

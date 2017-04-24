@@ -96,7 +96,7 @@ void GLProgram::setFloat2(const std::string &param, float v1, float v2) const
 	glUniform2f(uniformHandle, v1, v2);
 }
 
-void GLProgram::setMat4(const std::string &param, Matrix4 &value) const
+void GLProgram::setMat4(const std::string &param, const Matrix4 &value) const
 {
 	GLuint uniformHandle = glGetUniformLocation(programObject, (GLchar*)param.c_str());
 	glUniformMatrix4fv(uniformHandle, 1, GL_FALSE, (const GLfloat*) &value);

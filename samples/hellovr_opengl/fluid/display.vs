@@ -1,6 +1,7 @@
 #version 410
 
 uniform float time;
+uniform sampler2D texture;
 uniform mat4 mat_model;
 uniform mat4 mat_viewproj;
 
@@ -13,5 +14,6 @@ out vec2 texCoord;
 void main()
 {
 	texCoord = uvCoord;
-	gl_Position = mat_viewproj * (mat_model * vec4(position, 1.0));
+	float val = texture2D(texture, uvCoord).r;
+	gl_Position = mat_viewproj * (mat_model * vec4(position + vec3(0.0, 0.0, val * .1), 1.0));
 }

@@ -79,18 +79,18 @@ void swap(T* p)
 
 void GWaveSim::step(IRenderer* renderer, float dt) {
 	swap(field);
-	fieldMaterial.setFloat("jump", dt * .05f);
+	fieldMaterial.setFloat("jump", dt * .5f);
 	fieldMaterial.setFloat2("center", .5f, .5f);
 	fieldMaterial.setTexture("g_field", field[0].getTexture());
 	field[0].useTarget();
 	internalQuad.render(Matrix4());
 
 	float time = SysTimeMS() / 1000.0f;
-	float r = .05f;
-	body.transform = Matrix4().scale(.025f).translate(Vector3(r * cos(time * 5.0f), r * sin(time * 5.0f), 0));
+	float r = .05f, w = 5.0f;
+	body.transform = Matrix4().scale(.025f).translate(Vector3(r * cos(time * w), r * sin(time * w), 0));
 	body.render(Matrix4());
 
-	body.transform = Matrix4().scale(.025f).translate(Vector3(-r * cos(time * 5.0f), -r * sin(time * 5.0f), 0));
+	body.transform = Matrix4().scale(.025f).translate(Vector3(-r * cos(time * w), -r * sin(time * w), 0));
 	body.render(Matrix4());
 
 	displayMaterial.setTexture("texture", field[0].getTexture());
