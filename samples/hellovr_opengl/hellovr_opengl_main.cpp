@@ -10,6 +10,7 @@
 #include "IOUtils.h"
 #include "IModel.h"
 #include "GWaveSim.h"
+#include "glm/ext.hpp"
 
 #include "GLTexture.h"
 
@@ -50,9 +51,14 @@ int main(int argc, char *argv[])
 	This is the fix:
 	GLRenderer renderer = GLRenderer();
 	*/
-	Display display(800, 600, "hello sdl");
+	Display display(1000, 600, "hello sdl");
 	Renderer renderer(&display);
 	renderer.init();
+	// HACK: use a glm projection matrix among Valve Matrices because I don't want to write my own projection matrix code.
+	glm::mat4 proj = glm::perspective(3.14159f * .5f, display.getWidth() / (float) display.getHeight(), .1f, 100.f);
+	renderer.projection = ((Matrix4*) &proj)[0];
+	renderer.view.rotateX(-45.0f);
+	renderer.view.translate(Vector3(.1f, 0, -2));
 	
 	GLModel quad;
 	quad.addFace(

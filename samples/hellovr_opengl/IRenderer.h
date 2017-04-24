@@ -11,7 +11,7 @@ This class follows the CRTP to avoid virtual function call overhead.
 
 class IRenderer {
 public:
-	IRenderer(IDisplay* display) : display(display) {}
+	IRenderer(IDisplay* display) : display(display), view(), projection() {}
 
 	// Adds a renderable model to the scene
 	void addModel(IModel* model) {
@@ -25,10 +25,13 @@ public:
 	void updateDisplay() {
 		display->update();
 	}
+
+	Matrix4 view;
+	Matrix4 projection;
 protected:
 	void renderScene() {
 		for (auto it = models.begin(); it != models.end(); ++it) {
-			(*it)->render(Matrix4()); // use camera matrix here
+			(*it)->render(projection * view); // use camera matrix here
 		}
 	};
 	IRenderTarget* rendertarget;
