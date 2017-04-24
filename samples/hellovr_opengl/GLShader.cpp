@@ -75,13 +75,13 @@ void GLProgram::useProgram() const {
 	glUseProgram(programObject);
 }
 
-void GLProgram::setTexture(const std::string &param, const ITexture* texture) const {
+void GLProgram::setTexture(const std::string &param, const ITexture* texture, int slot) const {
 	const GLTexture* glTexture = static_cast<const GLTexture*>(texture);
 	// TODO: Support using multiple active textures at once.
 	GLuint uniformHandle = glGetUniformLocation(programObject, (GLchar*) param.c_str());
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE0 + slot);
 	glBindTexture(GL_TEXTURE_2D, glTexture->getTextureObject());
-	glUniform1i(uniformHandle, 1);
+	glUniform1i(uniformHandle, slot);
 }
 
 void GLProgram::setFloat(const std::string &param, float value) const

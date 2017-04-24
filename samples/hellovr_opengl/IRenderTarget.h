@@ -24,8 +24,9 @@ public:
 
 	virtual void useTarget() = 0;
 
-	int getWidth() { return width; };
-	int getHeight() { return height; };
+	int getWidth() { return width; }
+	int getHeight() { return height; }
+	ITexture* getTexture() { return target; }
 private:
 	int width;
 	int height;

@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 
 	renderer.addModel(&quad);
 
-	FluidSimGPU fluidSim(32, &fluidProgram);
+	FluidSimGPU fluidSim(1024, &fluidProgram);
 	quad.setMaterial(&fluidSim.displayMaterial);
 
 	/*

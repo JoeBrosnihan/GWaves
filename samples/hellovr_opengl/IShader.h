@@ -19,7 +19,7 @@ public:
 	IProgram() : vertexShader(nullptr), fragmentShader(nullptr) {}
 	virtual void link() = 0;
 	virtual void useProgram() const = 0;
-	virtual void setTexture(const std::string &param, const ITexture* texture) const = 0;
+	virtual void setTexture(const std::string &param, const ITexture* texture, int slot = 1) const = 0;
 	virtual void setFloat(const std::string &param, float value) const = 0;
 protected:
 	const IShader* vertexShader;
