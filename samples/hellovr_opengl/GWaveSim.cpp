@@ -2,8 +2,9 @@
 #include "GWaveSim.h"
 
 #include "IOUtils.h"
+#include <math.h>
 
-GWaveSim::GWaveSim(int size, GLProgram* displayProgram) : fieldVertShader(VERTEX_SHADER), fieldFragShader(FRAGMENT_SHADER) {
+GWaveSim::GWaveSim(int size, GLProgram* displayProgram) : fieldVertShader(VERTEX_SHADER), fieldFragShader(FRAGMENT_SHADER), bodyFragShader(FRAGMENT_SHADER) {
 	TEX_SIZE = size;
 
 	float* fieldData = new float[TEX_SIZE * TEX_SIZE];
@@ -35,6 +36,17 @@ GWaveSim::GWaveSim(int size, GLProgram* displayProgram) : fieldVertShader(VERTEX
 		IModel::Vertex(1, -1, 0, 0, 0, 0, 1, 0));
 	internalQuad.loadBuffers();
 
+	body = GLModel();
+	body.addFace(
+		IModel::Vertex(-1, 1, 0, 0, 0, 0, 0, 1),
+		IModel::Vertex(1, 1, 0, 0, 0, 0, 1, 1),
+		IModel::Vertex(-1, -1, 0, 0, 0, 0, 0, 0));
+	body.addFace(
+		IModel::Vertex(-1, -1, 0, 0, 0, 0, 0, 0),
+		IModel::Vertex(1, 1, 0, 0, 0, 0, 1, 1),
+		IModel::Vertex(1, -1, 0, 0, 0, 0, 1, 0));
+	body.loadBuffers();
+
 	displayMaterial = IMaterial(displayProgram);
 	// this is a perfect example of why it is bad style to put GL initialization in a class constructor.
 	//displayMaterial.setTexture("texture", (const ITexture*) &pt[1]);
@@ -45,8 +57,14 @@ GWaveSim::GWaveSim(int size, GLProgram* displayProgram) : fieldVertShader(VERTEX
 	fieldProgram = GLProgram(&fieldVertShader, &fieldFragShader);
 	fieldProgram.link();
 	fieldMaterial = IMaterial(&fieldProgram);
-
 	internalQuad.setMaterial(&fieldMaterial);
+
+	bodyFragShader.loadSource(readFile("fluid/body.fs"));
+	bodyProgram = GLProgram(&fieldVertShader, &bodyFragShader);
+	bodyProgram.link();
+	bodyMaterial = IMaterial(&bodyProgram);
+	bodyMaterial.setFloat("force", 1);
+	body.setMaterial(&bodyMaterial);
 
 	delete[] fieldData;
 }
@@ -61,12 +79,19 @@ void swap(T* p)
 
 void GWaveSim::step(IRenderer* renderer, float dt) {
 	swap(field);
-	fieldMaterial.setFloat("jump", dt * .01f);
+	fieldMaterial.setFloat("jump", dt * .05f);
 	fieldMaterial.setFloat2("center", .5f, .5f);
 	fieldMaterial.setTexture("g_field", field[0].getTexture());
-	
 	field[0].useTarget();
 	internalQuad.render(Matrix4());
+
+	float time = SysTimeMS() / 1000.0f;
+	float r = .05f;
+	body.transform = Matrix4().scale(.025f).translate(Vector3(r * cos(time * 5.0f), r * sin(time * 5.0f), 0));
+	body.render(Matrix4());
+
+	body.transform = Matrix4().scale(.025f).translate(Vector3(-r * cos(time * 5.0f), -r * sin(time * 5.0f), 0));
+	body.render(Matrix4());
 
 	displayMaterial.setTexture("texture", field[0].getTexture());
 }

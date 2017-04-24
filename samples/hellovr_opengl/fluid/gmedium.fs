@@ -11,9 +11,6 @@ out float outputValue;
 
 void main()
 {
-	float tx = texCoord.x;
-	float ty = texCoord.y;
-
 	vec2 diff = center - texCoord;
 	float dist = length(diff);
 
@@ -22,5 +19,6 @@ void main()
 	}
 	vec2 dir = diff / dist;
 
-	outputValue = texture2D(g_field, texCoord + jump * dir).r;
+	float force = texture2D(g_field, texCoord + jump * dir).r;
+	outputValue = force * (1 - .5 * jump / dist);
 }

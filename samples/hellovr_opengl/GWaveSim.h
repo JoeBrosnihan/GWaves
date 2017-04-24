@@ -21,4 +21,9 @@ private:
 	GLShader fieldFragShader;
 	GLProgram fieldProgram;
 	IMaterial fieldMaterial;
+
+	GLModel body;
+	GLShader bodyFragShader;
+	GLProgram bodyProgram;
+	IMaterial bodyMaterial;
 };
