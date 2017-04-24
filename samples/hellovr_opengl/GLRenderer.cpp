@@ -206,7 +206,7 @@ void GLRenderer::render() {
 	flop = !flop * .25f;
 	glClearColor(flop, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -214,7 +214,7 @@ void GLRenderer::render() {
 	gluPerspective(90.f, display->getWidth() / (float)display->getHeight(), 1.f, 1000.f);
 	glEnableClientState(GL_VERTEX_ARRAY);
 
-	glUseProgram(m_unSceneProgramID); //TODO get rid of me
 	renderScene();
-	glUseProgram(0);
+
+	glDisable(GL_DEPTH_TEST);
 }
