@@ -2,8 +2,12 @@
 #include "GLModel.h"
 #include <GL/glew.h>
 
-void GLModel::render() {
+
+void GLModel::render(const Matrix4 &viewProj) {
 	this->material->useMaterial();
+
+	Matrix4 mvp = transform * viewProj;
+	this->material->getProgram()->setMat4("MVP", mvp);
 
 	glBindVertexArray(vertexArrayObject);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);

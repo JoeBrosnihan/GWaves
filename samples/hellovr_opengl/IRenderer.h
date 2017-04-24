@@ -6,6 +6,8 @@ This class follows the CRTP to avoid virtual function call overhead.
 */
 
 #include "IDisplay.h"
+#include "IModel.h"
+#include "IRenderTarget.h"
 
 class IRenderer {
 public:
@@ -26,7 +28,7 @@ public:
 protected:
 	void renderScene() {
 		for (auto it = models.begin(); it != models.end(); ++it) {
-			(*it)->render();
+			(*it)->render(Matrix4()); // use camera matrix here
 		}
 	};
 	IRenderTarget* rendertarget;

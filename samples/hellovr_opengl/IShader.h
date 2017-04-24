@@ -2,6 +2,7 @@
 
 #include <string>
 #include "ITexture.h"
+#include "Shared/Matrices.h"
 
 enum ShaderType {VERTEX_SHADER, FRAGMENT_SHADER};
 
@@ -21,6 +22,8 @@ public:
 	virtual void useProgram() const = 0;
 	virtual void setTexture(const std::string &param, const ITexture* texture, int slot = 1) const = 0;
 	virtual void setFloat(const std::string &param, float value) const = 0;
+	virtual void setFloat2(const std::string &param, float v1, float v2) const = 0;
+	virtual void setMat4(const std::string &param, Matrix4 &value) const = 0;
 protected:
 	const IShader* vertexShader;
 	const IShader* fragmentShader;

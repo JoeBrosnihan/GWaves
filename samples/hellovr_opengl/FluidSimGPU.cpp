@@ -96,7 +96,7 @@ void FluidSimGPU::advect(int b, IRenderTarget* x, ITexture* x0, ITexture* u, ITe
 	advectMaterial.setTexture("velX", u); // am I mixing up u and v?
 	advectMaterial.setTexture("velY", v);
 	x->useTarget();
-	internalQuad.render();
+	internalQuad.render(Matrix4());
 }
 
 void FluidSimGPU::diffuse(int b, IRenderTarget* p, ITexture* p0, float diff, float dt)
@@ -107,7 +107,7 @@ void FluidSimGPU::diffuse(int b, IRenderTarget* p, ITexture* p0, float diff, flo
 
 	diffuseMaterial.setTexture("texture", p0);
 	p->useTarget();
-	internalQuad.render();
+	internalQuad.render(Matrix4());
 
 	set_bnd(b, p, p0);
 }
@@ -120,12 +120,12 @@ void FluidSimGPU::project(IRenderTarget* u_out, IRenderTarget* v_out, ITexture* 
 	project1Material.setTexture("velX", u_in);
 	project1Material.setTexture("velY", v_in);
 	u_out->useTarget();
-	internalQuad.render();
+	internalQuad.render(Matrix4());
 
 	// write aux1 = 0
 	project1Material.setFloat("pixelSize", 0.0f);
 	aux->useTarget();
-	internalQuad.render();
+	internalQuad.render(Matrix4());
 
 	internalQuad.setMaterial(&project2Material);
 	project2Material.setTexture("div", u_out->getTexture());
@@ -134,11 +134,11 @@ void FluidSimGPU::project(IRenderTarget* u_out, IRenderTarget* v_out, ITexture* 
 		// where i,j alternate between 1,2 and 2,1.
 		project2Material.setTexture("p", aux->getTexture());
 		v_out->useTarget();
-		internalQuad.render();
+		internalQuad.render(Matrix4());
 
 		project2Material.setTexture("p", v_out->getTexture());
 		aux->useTarget();
-		internalQuad.render();
+		internalQuad.render(Matrix4());
 	}
 	// p = aux1 at the end of this loop
 
@@ -149,12 +149,12 @@ void FluidSimGPU::project(IRenderTarget* u_out, IRenderTarget* v_out, ITexture* 
 	project3Material.setTexture("vel", u_in);
 	project3Material.setFloat("xWeight", 1);
 	u_out->useTarget();
-	internalQuad.render();
+	internalQuad.render(Matrix4());
 
 	project3Material.setTexture("vel", v_in);
 	project3Material.setFloat("xWeight", 0);
 	v_out->useTarget();
-	internalQuad.render();
+	internalQuad.render(Matrix4());
 }
 
 template<typename T>

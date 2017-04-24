@@ -15,7 +15,7 @@ public:
 			: x(x), y(y), z(z), nx(nx), ny(ny), nz(nz), u(u), v(v) {};
 	};
 
-	IModel() : vertices(), material(nullptr) {}; // Is vertices() necessary?
+	IModel() : vertices(), material(nullptr), transform() {}; // Is vertices() necessary?
 
 	void setMaterial(IMaterial* material) { this->material = material; }
 
@@ -36,9 +36,10 @@ public:
 		}
 	};
 
-	virtual void render() = 0;
+	virtual void render(const Matrix4 &viewProj) = 0;
 	virtual void loadBuffers() = 0;
 	
+	Matrix4 transform;
 protected:
 	std::vector<Vertex> vertices;
 	IMaterial* material;

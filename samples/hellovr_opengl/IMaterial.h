@@ -16,6 +16,8 @@ public:
 
 	IMaterial(const IProgram* program) : program(program), textureParameters(), floatParameters() {}
 
+	const IProgram* getProgram() { return program; }
+
 	void useMaterial() {
 		program->useProgram();
 		for (size_t i = 0; i < textureParameters.size(); i++) {
@@ -24,6 +26,9 @@ public:
 		}
 		for (auto it = floatParameters.begin(); it != floatParameters.end(); it++) {
 			program->setFloat(it->first, it->second);
+		}
+		for (auto it = float2Parameters.begin(); it != float2Parameters.end(); it++) {
+			program->setFloat2(it->first, it->second.x, it->second.y);
 		}
 	}
 
@@ -41,9 +46,20 @@ public:
 	{
 		floatParameters[param] = value;
 	}
+
+	void setFloat2(const std::string &param, float v1, float v2)
+	{
+		float2 value = { v1, v2 };
+		float2Parameters[param] = value;
+	}
 private:
+	struct float2 {
+		float x, y;
+	};
 	typedef std::pair<std::string, const ITexture*> tex_keyval;
+
 	const IProgram* program;
 	std::vector<tex_keyval> textureParameters;
 	std::unordered_map<std::string, float> floatParameters;
+	std::unordered_map<std::string, float2> float2Parameters;
 };

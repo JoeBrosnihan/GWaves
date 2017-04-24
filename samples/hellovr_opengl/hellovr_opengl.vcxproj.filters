@@ -75,6 +75,9 @@
     <ClCompile Include="FluidSimGPU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GWaveSim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\lodepng.h">
@@ -138,6 +141,9 @@
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="FluidSimGPU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GWaveSim.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
