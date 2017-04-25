@@ -15,5 +15,5 @@ void main()
 {
 	texCoord = uvCoord;
 	float val = texture2D(texture, uvCoord).r;
-	gl_Position = mat_viewproj * (mat_model * vec4(position + vec3(0.0, 0.0, val * .1), 1.0));
+	gl_Position = mat_viewproj * (mat_model * vec4(position + vec3(0.0, val * .1, 0.0), 1.0));
 }

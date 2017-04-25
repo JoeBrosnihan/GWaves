@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include "OpenVRDisplay.h"
+#include "SDLDisplay.h"
 #include "GLRenderer.h"
 #include "GLRenderTarget.h"
 #include "IOUtils.h"
@@ -38,8 +38,7 @@ bool handleInput()
 	return bRet;
 }
 
-int main(int argc, char *argv[])
-{
+void GFieldVisualization() {
 	/*
 	Interestingly, the following does not work. I think it tries to use a copy
 	constructor because the compiler thinks the types are technically not equal.
@@ -47,16 +46,107 @@ int main(int argc, char *argv[])
 	This is the fix:
 	GLRenderer renderer = GLRenderer();
 	*/
-	//SDLDisplay display(1800, 1000, "hello sdl");
-	OpenVRDisplay display(1800, 1000, "hello sdl");
+	SDLDisplay display(1800, 1000, "hello sdl");
+	//OpenVRDisplay display(1800, 1000, "hello sdl");
 	GLRenderer renderer(&display);
 	renderer.init();
 	// HACK: use a glm projection matrix among Valve Matrices because I don't want to write my own projection matrix code.
-	glm::mat4 proj = glm::perspective(3.14159f * .5f, display.getWidth() / (float) display.getHeight(), .1f, 100.f);
-	renderer.projection = ((Matrix4*) &proj)[0];
+	glm::mat4 proj = glm::perspective(3.14159f * .5f, display.getWidth() / (float)display.getHeight(), .1f, 100.f);
+	renderer.projection = ((Matrix4*)&proj)[0];
+	//renderer.view.rotateX(-45.0f);
+	renderer.view.translate(Vector3(0, -1, -2));
+
+	// Gravity Field
+
+	GLModel surface;
+	const int RESOLUTION = 256;
+	surface.addPlane(RESOLUTION, Matrix4().rotateX(-90));
+	surface.loadBuffers();
+
+	GLShader vertShader(VERTEX_SHADER);
+	vertShader.loadSource(readFile("fluid/display.vs"));
+
+	GLShader fragShader(FRAGMENT_SHADER);
+	fragShader.loadSource(readFile("fluid/display.fs"));
+
+	GLProgram waveProgram(&vertShader, &fragShader);
+	waveProgram.link();
+
+	GWaveSim gWaveSim(1024, &waveProgram);
+	surface.setMaterial(&gWaveSim.displayMaterial);
+
+	renderer.addModel(&surface);
+
+	// Black Hole
+
+	GLModel blackHole;
+	blackHole.addSphere(.025f);
+	blackHole.loadBuffers();
+
+	GLModel blackHole2;
+	blackHole2.addSphere(.025f);
+	blackHole2.loadBuffers();
+
+	GLShader phongVertShader(VERTEX_SHADER);
+	phongVertShader.loadSource(readFile("phong.vs"));
+	GLShader phongFragShader(FRAGMENT_SHADER);
+	phongFragShader.loadSource(readFile("phong.fs"));
+	GLProgram phongProgram(&phongVertShader, &phongFragShader);
+	phongProgram.link();
+
+	IMaterial holeMaterial(&phongProgram);
+	blackHole.setMaterial(&holeMaterial);
+	renderer.addModel(&blackHole);
+	blackHole2.setMaterial(&holeMaterial);
+	renderer.addModel(&blackHole2);
+
+	//FluidSimGPU fluidSim(1024, &fluidProgram);
+	//quad.setMaterial(&fluidSim.displayMaterial);
+
+	long lastTime = SysTimeMS();
+	while (!display.isClosed()) {
+		long currTime = SysTimeMS();
+		float deltaT = (currTime - lastTime) / 1000.f;
+		if (deltaT < 0)
+			lastTime = lastTime + 0;
+		lastTime = currTime;
+		gWaveSim.step(&renderer, .0025f); // This needs to be time independent without looking bad!
+
+		float time = currTime / 1000.f;
+		const float r = .05f, w = 5.f;
+		blackHole.transform = Matrix4();
+		blackHole.transform.translate(Vector3(r * cos(w * time), .15f, -r * sin(w * time)));
+		blackHole2.transform = Matrix4();
+		blackHole2.transform.translate(Vector3(-r * cos(w * time), .15f, r * sin(w * time)));
+
+
+		//renderer.view = display.GetUpdatedHMDMatrixPose();
+		//renderer.projection = display.m_mat4ProjectionLeft;
+
+
+		renderer.renderToDisplay();
+		renderer.updateDisplay();
+	}
+}
+
+void SpaceWarpVisualization() {
+	/*
+	Interestingly, the following does not work. I think it tries to use a copy
+	constructor because the compiler thinks the types are technically not equal.
+	Renderer<GLRenderer> renderer = GLRenderer();
+	This is the fix:
+	GLRenderer renderer = GLRenderer();
+	*/
+	SDLDisplay display(1800, 1000, "hello sdl");
+	//OpenVRDisplay display(1800, 1000, "hello sdl");
+	GLRenderer renderer(&display);
+	renderer.init();
+	// HACK: use a glm projection matrix among Valve Matrices because I don't want to write my own projection matrix code.
+	glm::mat4 proj = glm::perspective(3.14159f * .5f, display.getWidth() / (float)display.getHeight(), .1f, 100.f);
+	renderer.projection = ((Matrix4*)&proj)[0];
 	renderer.view.rotateX(-45.0f);
 	renderer.view.translate(Vector3(0, 0, -1.5));
-	
+
 	// Gravity Field
 
 	GLModel surface;
@@ -144,13 +234,19 @@ int main(int argc, char *argv[])
 		blackHole2.transform.translate(Vector3(-r * cos(w * time), -r * sin(w * time), .15f));
 
 
-		renderer.view = display.GetUpdatedHMDMatrixPose();
+		//renderer.view = display.GetUpdatedHMDMatrixPose();
 		//renderer.projection = display.m_mat4ProjectionLeft;
 
 
 		renderer.renderToDisplay();
 		renderer.updateDisplay();
 	}
+}
+
+int main(int argc, char *argv[])
+{
+	GFieldVisualization();
+
 
 	return 0;
 }

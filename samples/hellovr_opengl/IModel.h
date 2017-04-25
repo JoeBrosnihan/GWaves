@@ -45,6 +45,69 @@ public:
 		addUnitSpherePart(rot);
 	}
 
+	// adds (2 * resolution) triangles to create a 2x2 plane
+	void addPlane(int resolution, Matrix4 &mat) {
+		const float step = 2.0f / resolution;
+		const float tstep = 1.0f / resolution;
+		/*for (int i = 0; i < resolution; i++) {
+			for (int j = 0; j < resolution; j++) {
+				float x = i * step - 1;
+				float y = j * step - 1;
+				float u = i * tstep;
+				float v = j * tstep;
+				addFace(
+					// upper left
+					IModel::Vertex(x, y + step, 0, 0, 0, 1, u, v + tstep),
+					// upper right
+					IModel::Vertex(x + step, y + step, 0, 0, 0, 1, u + tstep, v + tstep),
+					// lower left
+					IModel::Vertex(x, y, 0, 0, 0, 1, u, v));
+				addFace(
+					// lower left
+					IModel::Vertex(x, y, 0, 0, 0, 1, u, v),
+					// upper right
+					IModel::Vertex(x + step, y + step, 0, 0, 0, 1, u + tstep, v + tstep),
+					// lower right
+					IModel::Vertex(x + step, y, 0, 0, 0, 1, u + tstep, v));
+			}
+		}*/
+		for (int i = 0; i < resolution; i++) {
+			for (int j = 0; j < resolution; j++) {
+				float x = i * step - 1;
+				float y = j * step - 1;
+				float u = i * tstep;
+				float v = j * tstep;
+				Vector4 upperLeft(x, y + step, 0, 1), upperRight(x + step, y + step, 0, 1), lowerLeft(x, y, 0, 1), lowerRight(x + step, y, 0, 1);
+				upperLeft = mat * upperLeft;
+				upperRight = mat * upperRight;
+				lowerLeft = mat * lowerLeft;
+				lowerRight = mat * lowerRight;
+				Vector4 uln = mat * Vector4(0, 0, 1, 0);
+				Vector4 urn = mat * Vector4(0, 0, 1, 0);
+				Vector4 lln = mat * Vector4(0, 0, 1, 0);
+				Vector4 lrn = mat * Vector4(0, 0, 1, 0);
+				uln.normalize();
+				urn.normalize();
+				lln.normalize();
+				lrn.normalize();
+				addFace(
+					// upper left
+					IModel::Vertex(upperLeft, uln, u, v + tstep),
+					// upper right
+					IModel::Vertex(upperRight, urn, u + tstep, v + tstep),
+					// lower left
+					IModel::Vertex(lowerLeft, lln, u, v));
+				addFace(
+					// lower left
+					IModel::Vertex(lowerLeft, lln, u, v),
+					// upper right
+					IModel::Vertex(upperRight, urn, u + tstep, v + tstep),
+					// lower right
+					IModel::Vertex(lowerRight, lrn, u + tstep, v));
+			}
+		}
+	}
+
 	//create test model
 	void cubeTest() {
 		for (int x = -5; x <= 5; x++) {
