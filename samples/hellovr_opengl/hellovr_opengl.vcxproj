@@ -103,6 +103,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GLRenderer.cpp" />
+    <ClCompile Include="OpenVRDisplay.cpp" />
     <ClCompile Include="SDLDisplay.cpp" />
     <ClCompile Include="GLShader.cpp" />
   </ItemGroup>
@@ -122,6 +123,7 @@
     <ClInclude Include="IMaterial.h" />
     <ClInclude Include="IShader.h" />
     <ClInclude Include="ITexture.h" />
+    <ClInclude Include="OpenVRDisplay.h" />
     <ClInclude Include="SDLDisplay.h" />
     <ClInclude Include="IDisplay.h" />
     <ClInclude Include="IModel.h" />

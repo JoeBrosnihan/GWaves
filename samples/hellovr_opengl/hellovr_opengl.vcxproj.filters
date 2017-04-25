@@ -78,6 +78,9 @@
     <ClCompile Include="GWaveSim.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OpenVRDisplay.cpp">
+      <Filter>Source Files\GL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\lodepng.h">
@@ -145,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="GWaveSim.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenVRDisplay.h">
+      <Filter>Header Files\GL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

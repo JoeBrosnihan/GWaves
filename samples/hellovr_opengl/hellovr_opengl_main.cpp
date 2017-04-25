@@ -14,10 +14,6 @@
 
 #include "GLTexture.h"
 
-// Use the OpenGL implementation.
-typedef SDLDisplay Display;
-typedef GLRenderer Renderer;
-typedef GLTexture Texture;
 
 bool handleInput()
 {
@@ -51,8 +47,9 @@ int main(int argc, char *argv[])
 	This is the fix:
 	GLRenderer renderer = GLRenderer();
 	*/
-	Display display(1800, 1000, "hello sdl");
-	Renderer renderer(&display);
+	SDLDisplay display(1800, 1000, "hello sdl");
+	//OpenVRDisplay display(800, 600, "hello sdl");
+	GLRenderer renderer(&display);
 	renderer.init();
 	// HACK: use a glm projection matrix among Valve Matrices because I don't want to write my own projection matrix code.
 	glm::mat4 proj = glm::perspective(3.14159f * .5f, display.getWidth() / (float) display.getHeight(), .1f, 100.f);
