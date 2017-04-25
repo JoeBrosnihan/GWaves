@@ -25,6 +25,7 @@ public:
 	virtual void setTexture(const std::string &param, const ITexture* texture, int slot = 1) const;
 	virtual void setFloat(const std::string &param, float value) const;
 	virtual void setFloat2(const std::string &param, float v1, float v2) const;
+	virtual void setFloat4(const std::string &param, float v1, float v2, float v3, float v4) const;
 	virtual void setMat4(const std::string &param, const Matrix4 &value) const;
 private:
 	GLuint programObject;

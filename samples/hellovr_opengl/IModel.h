@@ -45,6 +45,24 @@ public:
 		addUnitSpherePart(rot);
 	}
 
+	void addCube(float radius) {
+		const float pi = 180.0f;
+		Matrix4 rot = Matrix4();
+		rot = rot.translate(0, 0, 1).scale(radius);
+		addPlane(1, rot);
+		rot.rotateY(pi * .5f);
+		addPlane(1, rot);
+		rot.rotateY(pi * .5f);
+		addPlane(1, rot);
+		rot.rotateY(pi * .5f);
+		addPlane(1, rot);
+		rot.rotateY(pi * .5f);
+		rot.rotateX(pi * .5f);
+		addPlane(1, rot);
+		rot.rotateX(pi);
+		addPlane(1, rot);
+	}
+
 	// adds (2 * resolution) triangles to create a 2x2 plane
 	void addPlane(int resolution, Matrix4 &mat) {
 		const float step = 2.0f / resolution;

@@ -80,7 +80,7 @@ Matrix4 OpenVRDisplay::GetUpdatedHMDMatrixPose()
 }
 
 OpenVRDisplay::OpenVRDisplay(int width, int height, const std::string &title) : IDisplay(width, height, title),
-	m_bVblank(false), m_fNearClip(.1f), m_fFarClip(100)
+	m_bVblank(false), m_fNearClip(.01f), m_fFarClip(1000)
 {
 	SDL_Init(SDL_INIT_EVERYTHING); // assumes only one window for lifetime of program
 
