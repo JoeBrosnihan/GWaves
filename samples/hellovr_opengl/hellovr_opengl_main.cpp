@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include "SDLDisplay.h"
+#include "OpenVRDisplay.h"
 #include "GLRenderer.h"
 #include "GLRenderTarget.h"
 #include "IOUtils.h"
@@ -47,8 +47,8 @@ int main(int argc, char *argv[])
 	This is the fix:
 	GLRenderer renderer = GLRenderer();
 	*/
-	SDLDisplay display(1800, 1000, "hello sdl");
-	//OpenVRDisplay display(800, 600, "hello sdl");
+	//SDLDisplay display(1800, 1000, "hello sdl");
+	OpenVRDisplay display(1800, 1000, "hello sdl");
 	GLRenderer renderer(&display);
 	renderer.init();
 	// HACK: use a glm projection matrix among Valve Matrices because I don't want to write my own projection matrix code.
@@ -142,6 +142,11 @@ int main(int argc, char *argv[])
 		blackHole.transform.translate(Vector3(r * cos(w * time), r * sin(w * time), .15f));
 		blackHole2.transform = Matrix4();
 		blackHole2.transform.translate(Vector3(-r * cos(w * time), -r * sin(w * time), .15f));
+
+
+		renderer.view = display.GetUpdatedHMDMatrixPose();
+		//renderer.projection = display.m_mat4ProjectionLeft;
+
 
 		renderer.renderToDisplay();
 		renderer.updateDisplay();
