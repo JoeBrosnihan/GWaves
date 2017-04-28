@@ -23,7 +23,7 @@ void GFieldVisualization() {
 	// Gravity Field
 
 	GLModel surface;
-	const int RESOLUTION = 256;
+	const int RESOLUTION = 1024;
 	surface.addPlane(RESOLUTION, Matrix4().rotateX(-90));
 	surface.loadBuffers();
 
