@@ -3,7 +3,10 @@
 
 #include <iostream>
 #include <GL/glew.h>
+#include "glm/ext.hpp"
 
+
+// Contains a lot of code from Valve OpenVR sample
 
 //-----------------------------------------------------------------------------
 // Purpose: Helper to get a string from a tracked device property and turn it
@@ -64,19 +67,22 @@ Matrix4 ConvertSteamVRMatrixToMatrix4(const vr::HmdMatrix34_t &matPose)
 	return matrixObj;
 }
 
-Matrix4 OpenVRDisplay::GetUpdatedHMDMatrixPose()
+void OpenVRDisplay::updateHMDMatrixPose()
 {
 	if (!m_pHMD)
-		return Matrix4();
+		hmdCam.setView(Matrix4());
 
 	vr::VRCompositor()->WaitGetPoses(m_rTrackedDevicePose, vr::k_unMaxTrackedDeviceCount, NULL, 0);
 
 	if (m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid)
 	{
-		m_mat4HMDPose = ConvertSteamVRMatrixToMatrix4(m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking);
-		m_mat4HMDPose.invert();
+		Matrix4 hmdView = ConvertSteamVRMatrixToMatrix4(m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking);
+		hmdView.translate(0, 1, 0);
+		hmdView.invert();
+		hmdCam.setView(hmdView);
+		leftEyeCam.setView(m_mat4eyePosLeft * hmdView);
+		rightEyeCam.setView(m_mat4eyePosRight * hmdView);
 	}
-	return m_mat4HMDPose;
 }
 
 OpenVRDisplay::OpenVRDisplay(int width, int height, const std::string &title) : IDisplay(width, height, title),
@@ -137,10 +143,13 @@ OpenVRDisplay::OpenVRDisplay(int width, int height, const std::string &title) : 
 	m_strDisplay = GetTrackedDeviceString(m_pHMD, vr::k_unTrackedDeviceIndex_Hmd, vr::Prop_SerialNumber_String);
 
 	// Setup Cameras
-	m_mat4ProjectionLeft = GetHMDMatrixProjectionEye(vr::Eye_Left);
-	m_mat4ProjectionRight = GetHMDMatrixProjectionEye(vr::Eye_Right);
+	leftEyeCam.setProjection(GetHMDMatrixProjectionEye(vr::Eye_Left));
+	rightEyeCam.setProjection(GetHMDMatrixProjectionEye(vr::Eye_Right));
 	m_mat4eyePosLeft = GetHMDMatrixPoseEye(vr::Eye_Left);
 	m_mat4eyePosRight = GetHMDMatrixPoseEye(vr::Eye_Right);
+	// HACK: use a glm projection matrix among Valve Matrices because I don't want to write my own projection matrix code.
+	glm::mat4 proj = glm::perspective(3.14159f * .5f, getWidth() / (float)getHeight(), .1f, 100.f);
+	hmdCam.setProjection(((Matrix4*)&proj)[0]);
 
 	// Setup Render Targets
 	if (!m_pHMD)
@@ -160,21 +169,48 @@ OpenVRDisplay::OpenVRDisplay(int width, int height, const std::string &title) : 
 	// Skip Setup Render Models
 	
 	// Init Compositor
-//	if (!vr::VRCompositor())
-//		printf("Compositor initialization failed. See log file for details\n");
+	if (!vr::VRCompositor())
+		printf("Compositor initialization failed. See log file for details\n");
 
 	SDL_StartTextInput();
 	//SDL_ShowCursor(SDL_DISABLE);
 }
 
 void OpenVRDisplay::update() {
+	vr::Texture_t leftEyeTexture;
+	leftEyeTexture.handle = (void*)leftEyeTex.getTextureObject();
+	leftEyeTexture.eType = vr::TextureType_OpenGL;
+	leftEyeTexture.eColorSpace = vr::ColorSpace_Gamma;
+	vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture);
+
+	vr::Texture_t rightEyeTexture;
+	rightEyeTexture.handle = (void*)rightEyeTex.getTextureObject();
+	rightEyeTexture.eType = vr::TextureType_OpenGL;
+	rightEyeTexture.eColorSpace = vr::ColorSpace_Gamma;
+	vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture);
+
 	SDL_GL_SwapWindow(window);
+}
 
-	SDL_Event e;
+void OpenVRDisplay::handleInput()
+{
+	updateHMDMatrixPose();
 
-	while (SDL_PollEvent(&e)) {
-		if (e.type == SDL_QUIT)
+	SDL_Event sdlEvent;
+	while (SDL_PollEvent(&sdlEvent) != 0)
+	{
+		if (sdlEvent.type == SDL_QUIT)
+		{
 			closed = true;
+		}
+		else if (sdlEvent.type == SDL_KEYDOWN)
+		{
+			if (sdlEvent.key.keysym.sym == SDLK_ESCAPE
+				|| sdlEvent.key.keysym.sym == SDLK_q)
+			{
+				closed = true;
+			}
+		}
 	}
 }
 

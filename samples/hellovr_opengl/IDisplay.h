@@ -8,6 +8,7 @@ public:
 		: width(width), height(height), closed(false) {};
 	virtual void update() = 0;
 	virtual ~IDisplay() {}
+	virtual void handleInput() = 0;
 	bool isClosed() { return closed; }
 	int getWidth() { return width; }
 	int getHeight() { return height; }

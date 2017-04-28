@@ -11,7 +11,7 @@ public:
 	GLRenderTarget() {};
 	GLRenderTarget(int width, int height, int nSamples);
 	GLRenderTarget(GLTexture* target);
-	virtual void useTarget();
+	virtual void useTarget() const;
 private:
 	GLuint framebuffer;
 	GLuint depthbuffer;

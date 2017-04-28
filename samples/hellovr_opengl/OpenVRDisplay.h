@@ -6,6 +6,7 @@
 #include <openvr.h>
 #include "shared/Matrices.h"
 #include "GLRenderTarget.h"
+#include "Camera.h"
 
 
 static const uint32_t k_unMaxTrackedDeviceCount = 16;
@@ -15,21 +16,28 @@ public:
 	OpenVRDisplay(int width, int height, const std::string &title);
 	virtual void update();
 	virtual ~OpenVRDisplay();
+	virtual void handleInput();
 
-	Matrix4 GetUpdatedHMDMatrixPose();
-
-	Matrix4 m_mat4ProjectionLeft;
+	const Camera* getHMDCam() { return &hmdCam; }
+	const Camera* getLeftEyeCam() { return &leftEyeCam; }
+	const Camera* getRightEyeCam() { return &rightEyeCam; }
+	const GLRenderTarget* getLeftEyeTarget() { return &leftEyeRT; }
+	const GLRenderTarget* getRightEyeTarget() { return &rightEyeRT; }
 private:
 	SDL_Window *window;
 	SDL_GLContext glContext;
 
+	Camera hmdCam;
+	Camera leftEyeCam;
 	GLTexture leftEyeTex;
 	GLRenderTarget leftEyeRT;
+	Camera rightEyeCam;
 	GLTexture rightEyeTex;
 	GLRenderTarget rightEyeRT;
 
 
 
+	void updateHMDMatrixPose();
 	Matrix4 GetHMDMatrixProjectionEye(vr::Hmd_Eye nEye);
 	Matrix4 GetHMDMatrixPoseEye(vr::Hmd_Eye nEye);
 
@@ -42,10 +50,8 @@ private:
 	std::string m_strDriver;
 	std::string m_strDisplay;
 
-	Matrix4 m_mat4HMDPose;
 	Matrix4 m_mat4eyePosRight;
 	Matrix4 m_mat4eyePosLeft;
-	Matrix4 m_mat4ProjectionRight;
 
 	vr::TrackedDevicePose_t m_rTrackedDevicePose[vr::k_unMaxTrackedDeviceCount];
 };

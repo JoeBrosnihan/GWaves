@@ -113,6 +113,7 @@
     <ClInclude Include="..\shared\pathtools.h" />
     <ClInclude Include="..\shared\strtools.h" />
     <ClInclude Include="..\shared\Vectors.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="FluidSim.h" />
     <ClInclude Include="FluidSimGPU.h" />
     <ClInclude Include="GLModel.h" />

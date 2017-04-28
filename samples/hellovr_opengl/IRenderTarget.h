@@ -22,10 +22,10 @@ public:
 		height(target->getHeight()),
 		nSamples(1) {};
 
-	virtual void useTarget() = 0;
+	virtual void useTarget() const = 0;
 
-	int getWidth() { return width; }
-	int getHeight() { return height; }
+	int getWidth() const { return width; }
+	int getHeight() const { return height; }
 	ITexture* getTexture() { return target; }
 private:
 	int width;

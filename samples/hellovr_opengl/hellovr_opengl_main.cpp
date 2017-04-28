@@ -10,51 +10,15 @@
 #include "IOUtils.h"
 #include "IModel.h"
 #include "GWaveSim.h"
-#include "glm/ext.hpp"
 
 #include "GLTexture.h"
 
 
-bool handleInput()
-{
-	SDL_Event sdlEvent;
-	bool bRet = false;
-
-	while (SDL_PollEvent(&sdlEvent) != 0)
-	{
-		if (sdlEvent.type == SDL_QUIT)
-		{
-			bRet = true;
-		}
-		else if (sdlEvent.type == SDL_KEYDOWN)
-		{
-			if (sdlEvent.key.keysym.sym == SDLK_ESCAPE
-				|| sdlEvent.key.keysym.sym == SDLK_q)
-			{
-				bRet = true;
-			}
-		}
-	}
-	return bRet;
-}
-
 void GFieldVisualization() {
-	/*
-	Interestingly, the following does not work. I think it tries to use a copy
-	constructor because the compiler thinks the types are technically not equal.
-	Renderer<GLRenderer> renderer = GLRenderer();
-	This is the fix:
-	GLRenderer renderer = GLRenderer();
-	*/
 	//SDLDisplay display(1800, 1000, "hello sdl");
-	OpenVRDisplay display(1800, 1000, "hello sdl");
+	OpenVRDisplay display(1600, 800, "hello sdl");
 	GLRenderer renderer(&display);
 	renderer.init();
-	// HACK: use a glm projection matrix among Valve Matrices because I don't want to write my own projection matrix code.
-	glm::mat4 proj = glm::perspective(3.14159f * .5f, display.getWidth() / (float)display.getHeight(), .1f, 100.f);
-	renderer.projection = ((Matrix4*)&proj)[0];
-	//renderer.view.rotateX(-45.0f);
-	renderer.view.translate(Vector3(0, -1, -2));
 
 	// Gravity Field
 
@@ -124,33 +88,26 @@ void GFieldVisualization() {
 		//renderer.projection = display.m_mat4ProjectionLeft;
 
 
+		display.handleInput();
+		//companion window
+		renderer.setCamera(display.getHMDCam());
 		renderer.renderToDisplay();
-		renderer.updateDisplay();
+		//left eye
+	//	renderer.setCamera(display.getLeftEyeCam());
+	//	renderer.renderTo(display.getLeftEyeTarget());
+		//right eye
+	//	renderer.setCamera(display.getRightEyeCam());
+	//	renderer.renderTo(display.getRightEyeTarget());
+		//show all
+		display.update();
 	}
 }
 
-void loadRoom(IRenderer* renderer) {
-
-	
-}
-
 void SpaceWarpVisualization() {
-	/*
-	Interestingly, the following does not work. I think it tries to use a copy
-	constructor because the compiler thinks the types are technically not equal.
-	Renderer<GLRenderer> renderer = GLRenderer();
-	This is the fix:
-	GLRenderer renderer = GLRenderer();
-	*/
 	//SDLDisplay display(1800, 1000, "hello sdl");
 	OpenVRDisplay display(1920, 1080, "hello sdl");
 	GLRenderer renderer(&display);
 	renderer.init();
-	// HACK: use a glm projection matrix among Valve Matrices because I don't want to write my own projection matrix code.
-	glm::mat4 proj = glm::perspective(3.14159f * .5f, display.getWidth() / (float)display.getHeight(), .1f, 100.f);
-	renderer.projection = ((Matrix4*)&proj)[0];
-	//renderer.view.rotateX(-45.0f);
-	renderer.view.translate(Vector3(0, -1, -2));
 
 	// Room
 	
@@ -261,20 +218,29 @@ void SpaceWarpVisualization() {
 		brownMaterial.setFloat("time", time);
 
 
-		renderer.view = display.GetUpdatedHMDMatrixPose();
-		renderer.view = renderer.view * Matrix4().translate(0, -.1, 0);
+		//renderer.view = renderer.view * Matrix4().translate(0, -.1, 0);
 		//renderer.projection = display.m_mat4ProjectionLeft;
 
 
+		display.handleInput();
+		//companion window
+		renderer.setCamera(display.getHMDCam());
 		renderer.renderToDisplay();
-		renderer.updateDisplay();
+		//left eye
+		renderer.setCamera(display.getLeftEyeCam());
+		renderer.renderTo(display.getLeftEyeTarget());
+		//right eye
+		renderer.setCamera(display.getRightEyeCam());
+		renderer.renderTo(display.getRightEyeTarget());
+		//show all
+		display.update();
 	}
 }
 
 int main(int argc, char *argv[])
 {
-	//GFieldVisualization();
-	SpaceWarpVisualization();
+	GFieldVisualization();
+	//SpaceWarpVisualization();
 
 	return 0;
 }

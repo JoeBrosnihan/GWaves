@@ -196,7 +196,7 @@ void GLRenderer::renderToDisplay() {
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void GLRenderer::renderTo(IRenderTarget* target) {
+void GLRenderer::renderTo(const IRenderTarget* target) {
 	target->useTarget();
 	render();
 }
@@ -205,12 +205,6 @@ void GLRenderer::render() {
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
-	gluPerspective(90.f, display->getWidth() / (float)display->getHeight(), 1.f, 1000.f);
-	glEnableClientState(GL_VERTEX_ARRAY);
 
 	renderScene();
 

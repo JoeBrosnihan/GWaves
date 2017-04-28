@@ -8,34 +8,37 @@ This class follows the CRTP to avoid virtual function call overhead.
 #include "IDisplay.h"
 #include "IModel.h"
 #include "IRenderTarget.h"
+#include "Camera.h"
 
 class IRenderer {
 public:
-	IRenderer(IDisplay* display) : display(display), view(), projection() {}
+	IRenderer(IDisplay* display) : display(display), camera(nullptr) {}
 
 	// Adds a renderable model to the scene
 	void addModel(IModel* model) {
 		models.push_back(model);
 	}
 
-	virtual void init() = 0;
-	virtual void renderToDisplay() = 0;
-	virtual void renderTo(IRenderTarget* target) = 0;
-
-	void updateDisplay() {
-		display->update();
+	void setCamera(const Camera* camera)
+	{
+		this->camera = camera;
 	}
 
-	Matrix4 view;
-	Matrix4 projection;
+	virtual void init() = 0;
+	virtual void renderToDisplay() = 0;
+	virtual void renderTo(const IRenderTarget* target) = 0;
 protected:
 	void renderScene() {
+		Matrix4 vpMatrix;
+		if (camera)
+			vpMatrix = camera->getVPMatrix();
 		for (auto it = models.begin(); it != models.end(); ++it) {
-			(*it)->render(projection * view); // use camera matrix here
+			(*it)->render(vpMatrix); // use camera matrix here
 		}
 	};
 	IRenderTarget* rendertarget;
 	IDisplay* display;
+	const Camera* camera;
 
 	//scene
 	std::vector<IModel*> models;

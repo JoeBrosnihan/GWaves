@@ -18,7 +18,7 @@ public:
 	GLRenderer(IDisplay * display);
 	virtual void init();
 	virtual void renderToDisplay();
-	virtual void renderTo(IRenderTarget* target);
+	virtual void renderTo(const IRenderTarget* target);
 	/*
 private: // SDL bookkeeping
 	SDL_Window *m_pCompanionWindow;
