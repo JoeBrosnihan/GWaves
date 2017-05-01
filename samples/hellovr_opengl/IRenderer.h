@@ -1,8 +1,9 @@
 #pragma once
 
 /*
-Manages the window and rendering of our application.
-This class follows the CRTP to avoid virtual function call overhead.
+ * A Renderer has the job of rendering scenes. This specifically entails
+ * rendering from the point of view of a camera a collection of models in
+ * world space utilizing the depth buffer.
 */
 
 #include "IDisplay.h"

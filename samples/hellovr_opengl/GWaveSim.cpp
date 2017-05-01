@@ -4,7 +4,7 @@
 #include "IOUtils.h"
 #include <math.h>
 
-GWaveSim::GWaveSim(int size, GLProgram* displayProgram) : fieldVertShader(VERTEX_SHADER), fieldFragShader(FRAGMENT_SHADER), bodyFragShader(FRAGMENT_SHADER) {
+GWaveSim::GWaveSim(int size, GLProgram* displayProgram) : fieldVertShader(VERTEX_SHADER), fieldFragShader(FRAGMENT_SHADER), blurFragShader(FRAGMENT_SHADER), bodyFragShader(FRAGMENT_SHADER) {
 	TEX_SIZE = size;
 
 	float* fieldData = new float[TEX_SIZE * TEX_SIZE];
@@ -57,7 +57,13 @@ GWaveSim::GWaveSim(int size, GLProgram* displayProgram) : fieldVertShader(VERTEX
 	fieldProgram = GLProgram(&fieldVertShader, &fieldFragShader);
 	fieldProgram.link();
 	fieldMaterial = IMaterial(&fieldProgram);
-	internalQuad.setMaterial(&fieldMaterial);
+
+	blurFragShader.loadSource(readFile("fluid/blur.fs"));
+	blurProgram = GLProgram(&fieldVertShader, &blurFragShader);
+	blurProgram.link();
+	blurMaterial = IMaterial(&blurProgram);
+	blurMaterial.setFloat2("pixelMarchVector", 0, 1.0f / TEX_SIZE);
+	displayMaterial.setFloat2("pixelMarchVector", 1.0f / TEX_SIZE, 0);
 
 	bodyFragShader.loadSource(readFile("fluid/body.fs"));
 	bodyProgram = GLProgram(&fieldVertShader, &bodyFragShader);
@@ -78,20 +84,27 @@ void swap(T* p)
 }
 
 void GWaveSim::step(IRenderer* renderer, float dt) {
+	Matrix4 identity;
 	swap(field);
+	internalQuad.setMaterial(&fieldMaterial);
 	fieldMaterial.setFloat("jump", dt * .5f);
 	fieldMaterial.setFloat2("center", .5f, .5f);
-	fieldMaterial.setTexture("g_field", field[0].getTexture());
+	fieldMaterial.setTexture("g_field", field[1].getTexture());
 	field[0].useTarget();
-	internalQuad.render(Matrix4());
+	internalQuad.render(identity);
 
 	float time = SysTimeMS() / 1000.0f;
 	float r = .05f, w = 5.0f;
 	body.transform = Matrix4().scale(.025f).translate(Vector3(r * cos(time * w), r * sin(time * w), 0));
-	body.render(Matrix4());
+	body.render(identity);
 
 	body.transform = Matrix4().scale(.025f).translate(Vector3(-r * cos(time * w), -r * sin(time * w), 0));
-	body.render(Matrix4());
+	body.render(identity);
 
-	displayMaterial.setTexture("texture", field[0].getTexture());
+	internalQuad.setMaterial(&blurMaterial);
+	field[1].useTarget();
+	blurMaterial.setTexture("source", field[0].getTexture());
+	internalQuad.render(identity);
+
+	displayMaterial.setTexture("texture", field[1].getTexture());
 }

@@ -4,6 +4,7 @@
 #include "GLModel.h"
 #include "GLRenderTarget.h"
 #include "GLShader.h"
+#include "BlurEffect.h"
 
 class GWaveSim {
 public:
@@ -21,6 +22,10 @@ private:
 	GLShader fieldFragShader;
 	GLProgram fieldProgram;
 	IMaterial fieldMaterial;
+
+	GLShader blurFragShader;
+	GLProgram blurProgram;
+	IMaterial blurMaterial;
 
 	GLModel body;
 	GLShader bodyFragShader;
