@@ -15,8 +15,7 @@
 
 class GLRenderer : public IRenderer {
 public:
-	GLRenderer(IDisplay * display);
-	virtual void init();
+	GLRenderer(IDisplay * display) : IRenderer(display) {}
 	virtual void renderToDisplay();
 	virtual void renderTo(const IRenderTarget* target);
 	/*
@@ -33,7 +32,6 @@ private: // GL bookkeeping
 	GLuint m_nTimeLocation;
 	GLuint m_unCompanionWindowProgramID;
 private:
-	bool initGL();
 	GLuint compileShader(const char *shaderName, const char *vertexShader, const char *fragmentShader);
 	void render();
 };

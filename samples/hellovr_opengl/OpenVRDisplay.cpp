@@ -147,9 +147,7 @@ OpenVRDisplay::OpenVRDisplay(int width, int height, const std::string &title) : 
 	rightEyeCam.setProjection(GetHMDMatrixProjectionEye(vr::Eye_Right));
 	m_mat4eyePosLeft = GetHMDMatrixPoseEye(vr::Eye_Left);
 	m_mat4eyePosRight = GetHMDMatrixPoseEye(vr::Eye_Right);
-	// HACK: use a glm projection matrix among Valve Matrices because I don't want to write my own projection matrix code.
-	glm::mat4 proj = glm::perspective(3.14159f * .5f, getWidth() / (float)getHeight(), .1f, 100.f);
-	hmdCam.setProjection(((Matrix4*)&proj)[0]);
+	hmdCam.setProjection(90, getWidth() / (float)getHeight(), .1f, 100.f);
 
 	// Setup Render Targets
 	if (!m_pHMD)

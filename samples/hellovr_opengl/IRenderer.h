@@ -13,19 +13,17 @@
 
 class IRenderer {
 public:
-	IRenderer(IDisplay* display) : display(display), camera(nullptr) {}
+	IRenderer(IDisplay* display) : display(display), camera(nullptr), skybox(nullptr) {}
 
 	// Adds a renderable model to the scene
 	void addModel(IModel* model) {
 		models.push_back(model);
 	}
 
-	void setCamera(const Camera* camera)
-	{
-		this->camera = camera;
-	}
+	void setCamera(const Camera* camera) { this->camera = camera; }
 
-	virtual void init() = 0;
+	void setSkybox(const IModel* model) { this->skybox = model; }
+
 	virtual void renderToDisplay() = 0;
 	virtual void renderTo(const IRenderTarget* target) = 0;
 protected:
@@ -40,6 +38,7 @@ protected:
 	IRenderTarget* rendertarget;
 	IDisplay* display;
 	const Camera* camera;
+	const IModel* skybox;
 
 	//scene
 	std::vector<IModel*> models;

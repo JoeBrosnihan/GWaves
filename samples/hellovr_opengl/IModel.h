@@ -137,7 +137,7 @@ public:
 		}
 	};
 
-	virtual void render(const Matrix4 &viewProj) = 0;
+	virtual void render(const Matrix4 &viewProj) const = 0;
 	virtual void loadBuffers() = 0;
 	
 	Matrix4 transform;

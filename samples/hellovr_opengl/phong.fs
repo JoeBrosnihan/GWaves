@@ -11,8 +11,6 @@ out vec4 outputColor;
 
 void main()
 {
-	//vec4 color = vec4(.1, .1, .1, .1); // should be a uniform
-	//vec4 color = vec4(1, 1, 1, 1); // should be a uniform
 	vec3 totalLight = vec3(.15, .15, .15);
 
 	float ndot = dot(normalize(worldNormal), vec3(-0.57735, 0.57735, 0.57735));

@@ -4,21 +4,26 @@
 
 #include <iostream>
 
-#include "OpenVRDisplay.h"
+#include "SDLDisplay.h"
 #include "GLRenderer.h"
 #include "GLRenderTarget.h"
 #include "IOUtils.h"
 #include "IModel.h"
 #include "GWaveSim.h"
+#include "shared/lodepng.h"
+#include "shared/pathtools.h"
 
 #include "GLTexture.h"
 
 
 void GFieldVisualization() {
-	//SDLDisplay display(1800, 1000, "hello sdl");
-	OpenVRDisplay display(1600, 800, "hello sdl");
+	Matrix4 shift;
+#ifndef VR
+	SDLDisplay display(1800, 1000, "hello sdl");
+#else
+	OpenVRDisplay display(1920, 1080, "hello sdl");
+#endif
 	GLRenderer renderer(&display);
-	renderer.init();
 
 	// Gravity Field
 
@@ -41,7 +46,7 @@ void GFieldVisualization() {
 
 	renderer.addModel(&surface);
 
-	// Black Hole
+	// Black Holes
 
 	GLModel blackHole;
 	blackHole.addSphere(.025f);
@@ -59,16 +64,40 @@ void GFieldVisualization() {
 	phongProgram.link();
 
 	IMaterial holeMaterial(&phongProgram);
+	holeMaterial.setFloat("time", 0);
 	blackHole.setMaterial(&holeMaterial);
 	renderer.addModel(&blackHole);
 	blackHole2.setMaterial(&holeMaterial);
 	renderer.addModel(&blackHole2);
 
-	//FluidSimGPU fluidSim(1024, &fluidProgram);
-	//quad.setMaterial(&fluidSim.displayMaterial);
+	// Skybox
+
+	GLModel skybox;
+	//skybox.addCube(-1);
+	skybox.addSphere(-1);
+	skybox.loadBuffers();
+
+	GLShader skyVertShader(VERTEX_SHADER);
+	skyVertShader.loadSource(readFile("skybox.vs"));
+	GLShader skyFragShader(FRAGMENT_SHADER);
+	skyFragShader.loadSource(readFile("unlit.fs"));
+	GLProgram skyProgram(&skyVertShader, &skyFragShader);
+	skyProgram.link();
+
+	std::vector<unsigned char> skyTexData;
+	unsigned skyTexWidth, skyTexHeight;
+	lodepng::decode(skyTexData, skyTexWidth, skyTexHeight, "sky.png");
+	GLTexture skyTexture((int) skyTexWidth, (int) skyTexHeight, RGBA, (char*) skyTexData.data());
+
+	IMaterial skyMaterial(&skyProgram);
+	skyMaterial.setTexture("texture", &skyTexture);
+	skybox.setMaterial(&skyMaterial);
+	renderer.setSkybox(&skybox);
 
 	long lastTime = SysTimeMS();
 	while (!display.isClosed()) {
+		display.getCamera()->setView(shift.translate(0, -.005f, 0).rotateX(.5f));
+
 		long currTime = SysTimeMS();
 		float deltaT = (currTime - lastTime) / 1000.f;
 		if (deltaT < 0)
@@ -83,14 +112,13 @@ void GFieldVisualization() {
 		blackHole2.transform = Matrix4();
 		blackHole2.transform.translate(Vector3(-r * cos(w * time), .15f, r * sin(w * time)));
 
-
-		//renderer.view = display.GetUpdatedHMDMatrixPose();
-		//renderer.projection = display.m_mat4ProjectionLeft;
-
-
 		display.handleInput();
 		//companion window
+#ifdef VR
 		renderer.setCamera(display.getHMDCam());
+#else
+		renderer.setCamera(display.getCamera());
+#endif
 		renderer.renderToDisplay();
 		//left eye
 	//	renderer.setCamera(display.getLeftEyeCam());
@@ -104,10 +132,12 @@ void GFieldVisualization() {
 }
 
 void SpaceWarpVisualization() {
-	//SDLDisplay display(1800, 1000, "hello sdl");
+#ifndef VR
+	SDLDisplay display(1800, 1000, "hello sdl");
+#else
 	OpenVRDisplay display(1920, 1080, "hello sdl");
+#endif
 	GLRenderer renderer(&display);
-	renderer.init();
 
 	// Room
 	
@@ -224,14 +254,18 @@ void SpaceWarpVisualization() {
 
 		display.handleInput();
 		//companion window
+#ifdef VR
 		renderer.setCamera(display.getHMDCam());
+#else
+		renderer.setCamera(display.getCamera());
+#endif
 		renderer.renderToDisplay();
 		//left eye
-		renderer.setCamera(display.getLeftEyeCam());
-		renderer.renderTo(display.getLeftEyeTarget());
+		//	renderer.setCamera(display.getLeftEyeCam());
+		//	renderer.renderTo(display.getLeftEyeTarget());
 		//right eye
-		renderer.setCamera(display.getRightEyeCam());
-		renderer.renderTo(display.getRightEyeTarget());
+		//	renderer.setCamera(display.getRightEyeCam());
+		//	renderer.renderTo(display.getRightEyeTarget());
 		//show all
 		display.update();
 	}

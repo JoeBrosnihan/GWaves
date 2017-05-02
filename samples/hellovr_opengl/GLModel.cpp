@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 
 
-void GLModel::render(const Matrix4 &viewProj) {
+void GLModel::render(const Matrix4 &viewProj) const {
 	this->material->useMaterial();
 
 	this->material->getProgram()->setMat4("mat_model", transform);

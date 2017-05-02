@@ -32,6 +32,8 @@ SDLDisplay::SDLDisplay(int width, int height, const std::string &title) : IDispl
 		exit(EXIT_FAILURE);
 	}
 	glGetError(); // clear any error
+
+	camera.setProjection(90, getWidth() / (float)getHeight());
 }
 
 void SDLDisplay::update() {
@@ -49,4 +51,23 @@ SDLDisplay::~SDLDisplay() {
 	SDL_GL_DeleteContext(glContext);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+}
+
+void SDLDisplay::handleInput() {
+	SDL_Event sdlEvent;
+	while (SDL_PollEvent(&sdlEvent) != 0)
+	{
+		if (sdlEvent.type == SDL_QUIT)
+		{
+			closed = true;
+		}
+		else if (sdlEvent.type == SDL_KEYDOWN)
+		{
+			if (sdlEvent.key.keysym.sym == SDLK_ESCAPE
+				|| sdlEvent.key.keysym.sym == SDLK_q)
+			{
+				closed = true;
+			}
+		}
+	}
 }
