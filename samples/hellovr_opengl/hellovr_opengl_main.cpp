@@ -4,7 +4,6 @@
 
 #include <iostream>
 
-#include "SDLDisplay.h"
 #include "GLRenderer.h"
 #include "GLRenderTarget.h"
 #include "IOUtils.h"
@@ -15,6 +14,13 @@
 
 #include "GLTexture.h"
 
+#define VR
+
+#ifdef VR
+#include "OpenVRDisplay.h"
+#else
+#include "SDLDisplay.h"
+#endif
 
 void GFieldVisualization() {
 	Matrix4 shift;
@@ -96,8 +102,6 @@ void GFieldVisualization() {
 
 	long lastTime = SysTimeMS();
 	while (!display.isClosed()) {
-		display.getCamera()->setView(shift.translate(0, -.005f, 0).rotateX(.5f));
-
 		long currTime = SysTimeMS();
 		float deltaT = (currTime - lastTime) / 1000.f;
 		if (deltaT < 0)
@@ -159,9 +163,10 @@ void SpaceWarpVisualization() {
 
 	int W = 39; //odd
 	float squareWidth = .1;
+	float roomSize = W * squareWidth;
 	Matrix4 placer;
 	placer.scale(squareWidth / 2.0f).rotateX(-90);
-	placer.translate(-W * squareWidth / 2, 0, -W * squareWidth / 2);
+	placer.translate(-(W - 1) * squareWidth / 2, 0, -(W - 1) * squareWidth / 2);
 	GLModel whitefloor, blackfloor;
 	bool white = true;
 	for (int i = 0; i < W; i++) {
@@ -173,7 +178,7 @@ void SpaceWarpVisualization() {
 			white = !white;
 			placer.translate(squareWidth, 0, 0);
 		}
-		placer.translate(-squareWidth * W, 0, squareWidth);
+		placer.translate(-roomSize, 0, squareWidth);
 	}
 	whitefloor.loadBuffers();
 	blackfloor.loadBuffers();
@@ -182,23 +187,21 @@ void SpaceWarpVisualization() {
 	whitefloor.setMaterial(&whiteMaterial);
 	blackfloor.setMaterial(&blackMaterial);
 
-	placer.identity().translate(0, 0, W * squareWidth / 2 + 3);
+	placer.identity().scale(roomSize * .5f, roomSize * .5f, roomSize * .5f).translate(0, roomSize * .5f, roomSize * .5f);
 	GLModel walls[4];
 	for (int i = 0; i < 4; i++) {
-		walls[i].addCube(3);
+		walls[i].addPlane(W, placer);
 		walls[i].loadBuffers();
 		walls[i].setMaterial(&brownMaterial);
-		walls[i].transform = placer;
-		//walls[i].transform = walls[i].transform
 		renderer.addModel(&walls[i]);
 		placer.rotateY(90);
 	}
 
 	GLModel ceiling;
-	ceiling.addCube(3);
+	ceiling.addPlane(W, Matrix4());
 	ceiling.loadBuffers();
 	ceiling.setMaterial(&whiteMaterial);
-	ceiling.transform = Matrix4().translate(0, 2 + 3, 0);
+	ceiling.transform = Matrix4().scale(roomSize * .5f).rotateX(90).translate(0, roomSize * .5f, 0);
 	renderer.addModel(&ceiling);
 
 	const int P = 5;
@@ -273,8 +276,8 @@ void SpaceWarpVisualization() {
 
 int main(int argc, char *argv[])
 {
-	GFieldVisualization();
-	//SpaceWarpVisualization();
+	//GFieldVisualization();
+	SpaceWarpVisualization();
 
 	return 0;
 }

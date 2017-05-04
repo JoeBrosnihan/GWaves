@@ -17,8 +17,12 @@ void main()
 	texCoord = uvCoord;
 	worldPos = (mat_model * vec4(position, 1.0)).xyz;
 
-	float weight = clamp((time - 10) / 5, 0, 1);
-	worldPos = worldPos + vec3(.1 * weight * sin(worldPos.x + 2 * time), 0, 0);
+	float weight = .2 * clamp((time - 10) / 5, 0, 1);
+	float deformation = 1 + weight * cos(worldPos.x + 2 * time);
+	float stretchFactor = 1 / sqrt(deformation);
+	
+	worldPos = worldPos + vec3(weight * sin(worldPos.x + 2 * time), 0, 0);
+	worldPos = worldPos * vec3(1, stretchFactor, stretchFactor);
 
 	worldNormal = (mat_model * vec4(normal, 0.0)).xyz;
 

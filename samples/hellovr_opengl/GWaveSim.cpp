@@ -10,13 +10,6 @@ GWaveSim::GWaveSim(int size, GLProgram* displayProgram) : fieldVertShader(VERTEX
 	float* fieldData = new float[TEX_SIZE * TEX_SIZE];
 	for (int i = 0; i < TEX_SIZE * TEX_SIZE; i++) {
 		fieldData[i] = 0;
-
-		int j = i % TEX_SIZE;
-		int k = i / TEX_SIZE;
-		if (j > 50 && j < 300 && k > 50 && k < 300)
-			fieldData[i] = .5f;
-		if (j > 150 && j < 200 && k > 150 && k < 200)
-			fieldData[i] = 1;
 	}
 
 	for (int i = 0; i <= 1; i++)

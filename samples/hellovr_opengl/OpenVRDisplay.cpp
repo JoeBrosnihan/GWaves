@@ -77,7 +77,9 @@ void OpenVRDisplay::updateHMDMatrixPose()
 	if (m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid)
 	{
 		Matrix4 hmdView = ConvertSteamVRMatrixToMatrix4(m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking);
-		hmdView.translate(0, 1, 0);
+		//hmdView.translate(-1, -1, -1.5f);
+		hmdView.rotateY(-90);
+		hmdView.translate(1.5f, -1, -1);
 		hmdView.invert();
 		hmdCam.setView(hmdView);
 		leftEyeCam.setView(m_mat4eyePosLeft * hmdView);
@@ -147,7 +149,7 @@ OpenVRDisplay::OpenVRDisplay(int width, int height, const std::string &title) : 
 	rightEyeCam.setProjection(GetHMDMatrixProjectionEye(vr::Eye_Right));
 	m_mat4eyePosLeft = GetHMDMatrixPoseEye(vr::Eye_Left);
 	m_mat4eyePosRight = GetHMDMatrixPoseEye(vr::Eye_Right);
-	hmdCam.setProjection(90, getWidth() / (float)getHeight(), .1f, 100.f);
+	hmdCam.setProjection(90, getWidth() / (float)getHeight(), .01f, 100.f);
 
 	// Setup Render Targets
 	if (!m_pHMD)

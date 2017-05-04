@@ -28,6 +28,9 @@
     <Filter Include="Source Files\GL">
       <UniqueIdentifier>{35232c4a-146d-4720-9bc4-a5129e6f9cb4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{ea395119-073e-4552-9e07-3ba5f5feb1e1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\shared\lodepng.cpp">
@@ -80,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="OpenVRDisplay.cpp">
       <Filter>Source Files\GL</Filter>
+    </ClCompile>
+    <ClCompile Include="BlurEffect.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +159,9 @@
       <Filter>Header Files\GL</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="BlurEffect.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
