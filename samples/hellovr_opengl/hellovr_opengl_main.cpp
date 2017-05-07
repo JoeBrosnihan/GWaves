@@ -146,7 +146,7 @@ void SpaceWarpVisualization() {
 	// Room
 	
 	GLShader phongVertShader(VERTEX_SHADER);
-	phongVertShader.loadSource(readFile("phong.vs"));
+	phongVertShader.loadSource(readFile("phong_distorted.vs"));
 	GLShader phongFragShader(FRAGMENT_SHADER);
 	phongFragShader.loadSource(readFile("phong.fs"));
 	GLProgram phongProgram(&phongVertShader, &phongFragShader);
@@ -243,16 +243,11 @@ void SpaceWarpVisualization() {
 			lastTime = lastTime + 0;
 		lastTime = currTime;
 
-		//float time = currTime / 1000.f;
 		time += 1.f / 90.f;
 		whiteMaterial.setFloat("time", time);
 		blackMaterial.setFloat("time", time);
 		redMaterial.setFloat("time", time);
 		brownMaterial.setFloat("time", time);
-
-
-		//renderer.view = renderer.view * Matrix4().translate(0, -.1, 0);
-		//renderer.projection = display.m_mat4ProjectionLeft;
 
 
 		display.handleInput();
