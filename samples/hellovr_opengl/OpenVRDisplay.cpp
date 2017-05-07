@@ -158,10 +158,10 @@ OpenVRDisplay::OpenVRDisplay(int width, int height, const std::string &title) : 
 	uint32_t recommendedWidth, recommendedHeight;
 	m_pHMD->GetRecommendedRenderTargetSize(&recommendedWidth, &recommendedHeight);
 
-	/*leftEyeTex = GLTexture(recommendedWidth, recommendedHeight, RGBA, nullptr);
+	leftEyeTex = GLTexture(recommendedWidth, recommendedHeight, RGBA, nullptr);
 	leftEyeRT = GLRenderTarget(&leftEyeTex);
 	rightEyeTex = GLTexture(recommendedWidth, recommendedHeight, RGBA, nullptr);
-	rightEyeRT = GLRenderTarget(&rightEyeTex);*/
+	rightEyeRT = GLRenderTarget(&rightEyeTex);
 
 	// Setup Companion Window
 		// TODO later

@@ -120,16 +120,16 @@ void GFieldVisualization() {
 		//companion window
 #ifdef VR
 		renderer.setCamera(display.getHMDCam());
+		//left eye
+		renderer.setCamera(display.getLeftEyeCam());
+		renderer.renderTo(display.getLeftEyeTarget());
+		//right eye
+		renderer.setCamera(display.getRightEyeCam());
+		renderer.renderTo(display.getRightEyeTarget());
 #else
 		renderer.setCamera(display.getCamera());
 #endif
 		renderer.renderToDisplay();
-		//left eye
-	//	renderer.setCamera(display.getLeftEyeCam());
-	//	renderer.renderTo(display.getLeftEyeTarget());
-		//right eye
-	//	renderer.setCamera(display.getRightEyeCam());
-	//	renderer.renderTo(display.getRightEyeTarget());
 		//show all
 		display.update();
 	}
@@ -259,16 +259,16 @@ void SpaceWarpVisualization() {
 		//companion window
 #ifdef VR
 		renderer.setCamera(display.getHMDCam());
+		//left eye
+			renderer.setCamera(display.getLeftEyeCam());
+			renderer.renderTo(display.getLeftEyeTarget());
+		//right eye
+			renderer.setCamera(display.getRightEyeCam());
+			renderer.renderTo(display.getRightEyeTarget());
 #else
 		renderer.setCamera(display.getCamera());
 #endif
 		renderer.renderToDisplay();
-		//left eye
-		//	renderer.setCamera(display.getLeftEyeCam());
-		//	renderer.renderTo(display.getLeftEyeTarget());
-		//right eye
-		//	renderer.setCamera(display.getRightEyeCam());
-		//	renderer.renderTo(display.getRightEyeTarget());
 		//show all
 		display.update();
 	}
