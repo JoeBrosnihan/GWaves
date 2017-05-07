@@ -77,9 +77,6 @@ void OpenVRDisplay::updateHMDMatrixPose()
 	if (m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid)
 	{
 		Matrix4 hmdView = ConvertSteamVRMatrixToMatrix4(m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking);
-		//hmdView.translate(-1, -1, -1.5f);
-		hmdView.rotateY(-90);
-		hmdView.translate(1.5f, -1, -1);
 		hmdView.invert();
 		hmdCam.setView(hmdView);
 		leftEyeCam.setView(m_mat4eyePosLeft * hmdView);
